@@ -1,6 +1,6 @@
 # 使用 Swift3 製作熱門文章瀏覽器 App  
 
-![熱門文章](http://i.imgur.com/P0rXUzhl.png)
+![熱門文章](http://i.imgur.com/cRMDBqMl.png)
 
 執行後會從網路下載並顯示 Disp BBS 最新的熱門文章列表  
 點擊想看的文章後，使用內嵌的瀏覽器在 App 中閱讀  
