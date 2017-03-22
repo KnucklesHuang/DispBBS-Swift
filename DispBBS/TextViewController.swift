@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AlamofireNetworkActivityIndicator
 
 
 class TextViewController: UIViewController, UIWebViewDelegate {
@@ -20,7 +19,6 @@ class TextViewController: UIViewController, UIWebViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
         self.webView.delegate = self
         
         guard self.bi != nil, self.ti != nil else { return }
@@ -52,8 +50,6 @@ class TextViewController: UIViewController, UIWebViewDelegate {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
     }
     func webViewDidFinishLoad(_ webView: UIWebView) {
-        //NetworkActivityIndicatorManager.shared.decrementActivityCount()
-        //print(NetworkActivityIndicatorManager.shared.isNetworkActivityIndicatorVisible)
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
         
         if self.webView.canGoBack {

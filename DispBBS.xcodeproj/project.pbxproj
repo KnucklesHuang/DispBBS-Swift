@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3A582C5724EC655F34EDC949 /* Pods_DispBBS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96F1BFC6D10DC7A61996ABFF /* Pods_DispBBS.framework */; };
 		DD0214FD1E7514670098187F /* TextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0214FC1E7514670098187F /* TextViewController.swift */; };
+		DD776E091E82AECC005B895C /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = DD776E081E82AECC005B895C /* .gitignore */; };
 		DDB847EE1E64C9830044C003 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB847ED1E64C9830044C003 /* AppDelegate.swift */; };
 		DDB847F31E64C9830044C003 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DDB847F11E64C9830044C003 /* Main.storyboard */; };
 		DDB847F51E64C9830044C003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDB847F41E64C9830044C003 /* Assets.xcassets */; };
@@ -22,6 +23,7 @@
 		96F1BFC6D10DC7A61996ABFF /* Pods_DispBBS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DispBBS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8A4E4A0B39D707761D1EBF2 /* Pods-DispBBS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DispBBS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DispBBS/Pods-DispBBS.debug.xcconfig"; sourceTree = "<group>"; };
 		DD0214FC1E7514670098187F /* TextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextViewController.swift; sourceTree = "<group>"; };
+		DD776E081E82AECC005B895C /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		DDB847EA1E64C9830044C003 /* DispBBS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DispBBS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDB847ED1E64C9830044C003 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DDB847F21E64C9830044C003 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -64,6 +66,7 @@
 		DDB847E11E64C9830044C003 = {
 			isa = PBXGroup;
 			children = (
+				DD776E081E82AECC005B895C /* .gitignore */,
 				DDB847EC1E64C9830044C003 /* DispBBS */,
 				DDB847EB1E64C9830044C003 /* Products */,
 				51134B211D48829B1B71CE44 /* Pods */,
@@ -157,6 +160,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD776E091E82AECC005B895C /* .gitignore in Resources */,
 				DDB847F81E64C9830044C003 /* LaunchScreen.storyboard in Resources */,
 				DDB847F51E64C9830044C003 /* Assets.xcassets in Resources */,
 				DDB847F31E64C9830044C003 /* Main.storyboard in Resources */,
