@@ -18,15 +18,16 @@ class HotTextViewController: UITableViewController {
         let urlString = "https://disp.cc/api/hot_text.json"
         Alamofire.request(urlString).responseJSON { response in
             self.refreshControl?.endRefreshing()
+            
             guard response.result.isSuccess else {
-                print("load data error: \(response.result.error)")
+                let errorMessage = response.result.error?.localizedDescription
+                self.alert(message: errorMessage!)
                 return
             }
             guard let JSON = response.result.value as? [String: Any] else {
-                print("JSON formate error")
+                self.alert(message: "JSON formate error")
                 return
             }
-            //print("JSON: \(JSON)")
             if let list = JSON["list"] as? [Any] {
                 self.hotTextArray = list
                 self.tableView.reloadData()
@@ -34,6 +35,12 @@ class HotTextViewController: UITableViewController {
             
         }
         
+    }
+    
+    func alert(message: String) {
+        let alert = UIAlertController(title: "錯誤訊息", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "確定", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
     
 
@@ -45,7 +52,6 @@ class HotTextViewController: UITableViewController {
         self.refreshControl?.addTarget(self, action: #selector(refresh(_:)), for: UIControlEvents.valueChanged)
         
         self.cellBackgroundView.backgroundColor = UIColor.darkGray
-
         
     }
 
@@ -92,7 +98,6 @@ class HotTextViewController: UITableViewController {
             cell.thumbImageView?.image = placeholderImage
         }
  
-
         return cell
     }
     
