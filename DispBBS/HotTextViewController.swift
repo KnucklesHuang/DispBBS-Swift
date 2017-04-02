@@ -52,6 +52,13 @@ class HotTextViewController: UITableViewController {
         self.refreshControl?.addTarget(self, action: #selector(refresh(_:)), for: UIControlEvents.valueChanged)
         
         self.cellBackgroundView.backgroundColor = UIColor.darkGray
+
+        // 上方加上分隔線
+//        let px = 1 / UIScreen.main.scale
+//        let frame = CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: px)
+//        let line: UIView = UIView(frame: frame)
+//        self.tableView.tableHeaderView = line
+//        line.backgroundColor = self.tableView.separatorColor
         
     }
 
