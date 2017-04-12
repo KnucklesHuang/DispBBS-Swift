@@ -8,10 +8,11 @@
 
 import UIKit
 
-class HotTextCell: UITableViewCell {
+class TableViewCell: UITableViewCell {
+    @IBOutlet weak var thumbImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descLabel: UILabel!
-    @IBOutlet weak var thumbImageView: UIImageView!
+    @IBOutlet weak var infoLabel: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()

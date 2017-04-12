@@ -1,8 +1,8 @@
 //
-//  HotTextViewController.swift
+//  BoardListViewController.swift
 //  DispBBS
 //
-//  Created by knuckles on 2017/3/2.
+//  Created by knuckles on 2017/4/10.
 //  Copyright © 2017年 Disp. All rights reserved.
 //
 
@@ -10,13 +10,12 @@ import UIKit
 import Alamofire
 import AlamofireImage
 
-class HotTextViewController: UITableViewController {
-    var hotTextArray:[Any]?
+class BoardListViewController: UITableViewController {
+    var boardListArray:[Any]?
     var cellBackgroundView = UIView()
     
     func loadData() {
-        //print("hotText loadData")
-        let urlString = "https://disp.cc/api/hot_text.json"
+        let urlString = "https://disp.cc/api/board.php?act=blist"
         Alamofire.request(urlString).responseJSON { response in
             if (self.refreshControl?.isRefreshing)! {
                 self.refreshControl?.endRefreshing()
@@ -27,12 +26,20 @@ class HotTextViewController: UITableViewController {
                 self.alert(message: errorMessage!)
                 return
             }
-            guard let JSON = response.result.value as? [String: Any] else {
+            guard let JSON = response.result.value as? [String: Any],
+                let isSuccess = JSON["isSuccess"] as? Int,
+                let errorMessage = JSON["errorMessage"] as? String else {
                 self.alert(message: "JSON formate error")
                 return
             }
-            if let list = JSON["list"] as? [Any] {
-                self.hotTextArray = list
+            if isSuccess != 1 {
+                self.alert(message: errorMessage)
+                return
+            }
+        
+            if let data = JSON["data"] as? [String: Any],
+                let blist = data["blist"] as? [Any] {
+                self.boardListArray = blist
                 self.tableView.reloadData()
             }
             
@@ -45,7 +52,6 @@ class HotTextViewController: UITableViewController {
         alert.addAction(UIAlertAction(title: "確定", style: .default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,8 +61,6 @@ class HotTextViewController: UITableViewController {
         self.refreshControl?.addTarget(self, action: #selector(loadData), for: UIControlEvents.valueChanged)
         
         self.cellBackgroundView.backgroundColor = UIColor.darkGray
-
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -70,56 +74,51 @@ class HotTextViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let num = self.hotTextArray?.count {
+        if let num = self.boardListArray?.count {
             return num
         } else {
             return 0
         }
     }
 
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "HotTextCell", for: indexPath) as! TableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "BoardListCell", for: indexPath) as! TableViewCell
         
         cell.selectedBackgroundView = self.cellBackgroundView
         
-        guard let hotText = self.hotTextArray?[indexPath.row] as? [String: Any] else {
+        guard let board = self.boardListArray?[indexPath.row] as? [String: Any] else {
             print("Get row \(indexPath.row) error")
             return cell
         }
-        cell.titleLabel?.text = hotText["title"] as? String
-        cell.descLabel?.text = hotText["desc"] as? String
+        cell.titleLabel?.text = board["name"] as? String
+        cell.descLabel?.text = board["title"] as? String
         
-        let img_list = hotText["img_list"] as? [String]
+        let imgUrlString = board["icon"] as? String
         let placeholderImage = UIImage(named: "displogo120")
-        if img_list?.count != 0 {
-            let url = URL(string: (img_list?[0])!)!
+        if imgUrlString != nil && imgUrlString != "" {
+            let url = URL(string: imgUrlString!)!
             cell.thumbImageView?.af_setImage(withURL: url, placeholderImage: placeholderImage)
         } else {
             cell.thumbImageView?.image = placeholderImage
         }
- 
+        
         return cell
     }
     
     
-    
     // MARK: - Navigation
-
+    
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "TextRead" {
-            guard let textViewController = segue.destination as? TextViewController,
+        if segue.identifier == "Board" {
+            guard let textListViewController = segue.destination as? TextListViewController,
                 let row = self.tableView.indexPathForSelectedRow?.row,
-                let hotText = self.hotTextArray?[row] as? [String: Any]
+                let board = self.boardListArray?[row] as? [String: Any]
                 else { return }
-
-            textViewController.bi = hotText["bi"] as? String
-            textViewController.ti = hotText["ti"] as? String
+            textListViewController.boardName = board["name"] as? String
         }
     }
     
 
+
 }
-
-

@@ -1,8 +1,8 @@
 //
-//  HotTextViewController.swift
+//  TextListViewController.swift
 //  DispBBS
 //
-//  Created by knuckles on 2017/3/2.
+//  Created by knuckles on 2017/4/12.
 //  Copyright © 2017年 Disp. All rights reserved.
 //
 
@@ -10,13 +10,15 @@ import UIKit
 import Alamofire
 import AlamofireImage
 
-class HotTextViewController: UITableViewController {
-    var hotTextArray:[Any]?
+class TextListViewController: UITableViewController {
+
+    var textListArray:[Any]?
     var cellBackgroundView = UIView()
+    var boardId: String!
+    var boardName: String!
     
     func loadData() {
-        //print("hotText loadData")
-        let urlString = "https://disp.cc/api/hot_text.json"
+        let urlString = "https://disp.cc/api/board.php?act=tlist&bn=\(boardName!)"
         Alamofire.request(urlString).responseJSON { response in
             if (self.refreshControl?.isRefreshing)! {
                 self.refreshControl?.endRefreshing()
@@ -27,12 +29,20 @@ class HotTextViewController: UITableViewController {
                 self.alert(message: errorMessage!)
                 return
             }
-            guard let JSON = response.result.value as? [String: Any] else {
-                self.alert(message: "JSON formate error")
+            guard let JSON = response.result.value as? [String: Any],
+                let isSuccess = JSON["isSuccess"] as? Int,
+                let errorMessage = JSON["errorMessage"] as? String else {
+                    self.alert(message: "JSON formate error")
+                    return
+            }
+            if isSuccess != 1 {
+                self.alert(message: errorMessage)
                 return
             }
-            if let list = JSON["list"] as? [Any] {
-                self.hotTextArray = list
+            if let data = JSON["data"] as? [String: Any],
+                let tlist = data["tlist"] as? [Any] {
+                self.boardId = data["bi"] as? String
+                self.textListArray = tlist
                 self.tableView.reloadData()
             }
             
@@ -46,80 +56,76 @@ class HotTextViewController: UITableViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         loadData()
         
         self.refreshControl?.addTarget(self, action: #selector(loadData), for: UIControlEvents.valueChanged)
         
         self.cellBackgroundView.backgroundColor = UIColor.darkGray
-
-        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-
+    
     // MARK: - Table view data source
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let num = self.hotTextArray?.count {
+        if let num = self.textListArray?.count {
             return num
         } else {
             return 0
         }
     }
-
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "HotTextCell", for: indexPath) as! TableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TextListCell", for: indexPath) as! TableViewCell
         
         cell.selectedBackgroundView = self.cellBackgroundView
         
-        guard let hotText = self.hotTextArray?[indexPath.row] as? [String: Any] else {
+        guard let text = self.textListArray?[indexPath.row] as? [String: Any] else {
             print("Get row \(indexPath.row) error")
             return cell
         }
-        cell.titleLabel?.text = hotText["title"] as? String
-        cell.descLabel?.text = hotText["desc"] as? String
+        cell.titleLabel?.text = text["title"] as? String
+        cell.descLabel?.text = text["desc"] as? String
         
-        let img_list = hotText["img_list"] as? [String]
+        if let timeString = text["time"] as? String,
+            let authorString = text["author"] as? String {
+            let start = timeString.index(timeString.startIndex, offsetBy: 5)
+            let end = timeString.index(timeString.startIndex, offsetBy: 16)
+            cell.infoLabel?.text = timeString.substring(with: start..<end)+" "+authorString
+        }
+        let imgUrlString = text["thumb"] as? String
         let placeholderImage = UIImage(named: "displogo120")
-        if img_list?.count != 0 {
-            let url = URL(string: (img_list?[0])!)!
+        if imgUrlString != nil && imgUrlString != "" {
+            let url = URL(string: imgUrlString!)!
             cell.thumbImageView?.af_setImage(withURL: url, placeholderImage: placeholderImage)
         } else {
             cell.thumbImageView?.image = placeholderImage
         }
- 
+        
         return cell
     }
     
-    
-    
     // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "TextRead" {
             guard let textViewController = segue.destination as? TextViewController,
                 let row = self.tableView.indexPathForSelectedRow?.row,
-                let hotText = self.hotTextArray?[row] as? [String: Any]
+                let text = self.textListArray?[row] as? [String: Any]
                 else { return }
-
-            textViewController.bi = hotText["bi"] as? String
-            textViewController.ti = hotText["ti"] as? String
+            
+            textViewController.bi = self.boardId
+            textViewController.ti = text["ti"] as? String
         }
     }
-    
-
+ 
 }
-
-
