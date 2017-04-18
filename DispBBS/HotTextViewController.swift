@@ -87,13 +87,27 @@ class HotTextViewController: UITableViewController {
             print("Get row \(indexPath.row) error")
             return cell
         }
-        cell.titleLabel?.text = hotText["title"] as? String
-        cell.descLabel?.text = hotText["desc"] as? String
         
-        let img_list = hotText["img_list"] as? [String]
-        let placeholderImage = UIImage(named: "displogo120")
-        if img_list?.count != 0 {
-            let url = URL(string: (img_list?[0])!)!
+        //cell.titleLabel?.text = hotText["title"] as? String
+        let hotNumStr = hotText["hot_num"] as! String
+        let darkRed = UIColor(red: 0x80/255.0, green: 0, blue: 0, alpha: 1.0)
+        let attributes = [NSForegroundColorAttributeName: UIColor.black,
+            NSBackgroundColorAttributeName: darkRed]
+        let titleAttrStr = NSMutableAttributedString(string: hotNumStr, attributes: attributes)
+        var title = hotText["title"] as! String
+        let boardName = hotText["board_name"] as! String
+        title = " \(title) - \(boardName)板"
+        titleAttrStr.append(NSAttributedString(string: title))
+        cell.titleLabel?.attributedText = titleAttrStr
+        
+        let author = hotText["author"] as! String
+        let desc = hotText["desc"] as! String
+        cell.descLabel?.text = "\(author) \(desc)"
+        
+        let imgList = hotText["img_list"] as? [String]
+        let placeholderImage = UIImage(named: "AppIcon")
+        if imgList?.count != 0 {
+            let url = URL(string: (imgList?[0])!)!
             cell.thumbImageView?.af_setImage(withURL: url, placeholderImage: placeholderImage)
         } else {
             cell.thumbImageView?.image = placeholderImage
@@ -106,7 +120,6 @@ class HotTextViewController: UITableViewController {
     
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "TextRead" {
             guard let textViewController = segue.destination as? TextViewController,

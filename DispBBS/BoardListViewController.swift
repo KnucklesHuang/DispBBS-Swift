@@ -11,11 +11,14 @@ import Alamofire
 import AlamofireImage
 
 class BoardListViewController: UITableViewController {
-    var boardListArray:[Any]?
     var cellBackgroundView = UIView()
+    var boardListArray:[Any] = []
+    var numBoardListLoad: Int = 0
+    var numBoardListTotal: Int = 0
+    var numPageLoad: Int = 0
     
     func loadData() {
-        let urlString = "https://disp.cc/api/board.php?act=blist"
+        let urlString = "https://disp.cc/api/board.php?act=blist&pageNum=\(numPageLoad)"
         Alamofire.request(urlString).responseJSON { response in
             if (self.refreshControl?.isRefreshing)! {
                 self.refreshControl?.endRefreshing()
@@ -39,7 +42,10 @@ class BoardListViewController: UITableViewController {
         
             if let data = JSON["data"] as? [String: Any],
                 let blist = data["blist"] as? [Any] {
-                self.boardListArray = blist
+                self.boardListArray.append(contentsOf: blist)
+                self.numBoardListLoad = self.boardListArray.count
+                self.numBoardListTotal = data["totalNum"] as! Int
+                self.numPageLoad += 1
                 self.tableView.reloadData()
             }
             
@@ -74,33 +80,57 @@ class BoardListViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let num = self.boardListArray?.count {
-            return num
-        } else {
-            return 0
+        var num: Int = 0
+        if self.numBoardListLoad > 0 {
+            // 加上一個載入更多按鈕
+            num = self.boardListArray.count + 1
         }
+        return num
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "BoardListCell", for: indexPath) as! TableViewCell
-        
-        cell.selectedBackgroundView = self.cellBackgroundView
-        
-        guard let board = self.boardListArray?[indexPath.row] as? [String: Any] else {
-            print("Get row \(indexPath.row) error")
-            return cell
-        }
-        cell.titleLabel?.text = board["name"] as? String
-        cell.descLabel?.text = board["title"] as? String
-        
-        let imgUrlString = board["icon"] as? String
-        let placeholderImage = UIImage(named: "displogo120")
-        if imgUrlString != nil && imgUrlString != "" {
-            let url = URL(string: imgUrlString!)!
-            cell.thumbImageView?.af_setImage(withURL: url, placeholderImage: placeholderImage)
+        var cell: TableViewCell
+        if indexPath.row < self.numBoardListLoad {
+            cell = tableView.dequeueReusableCell(withIdentifier: "BoardListCell", for: indexPath) as! TableViewCell
+            
+            guard let board = self.boardListArray[indexPath.row] as? [String: Any] else {
+                print("Get row \(indexPath.row) error")
+                return cell
+            }
+            let hotNumStr = board["hot"] as! String
+            let hotNum = Int(hotNumStr) ?? 0
+            if hotNum < 10 {
+                cell.titleLabel?.text = board["name"] as? String
+            } else {
+                let darkRed = UIColor(red: 0x80/255.0, green: 0, blue: 0, alpha: 1.0)
+                let attributes = [NSForegroundColorAttributeName: UIColor.black,
+                                  NSBackgroundColorAttributeName: darkRed]
+                let boardNameAttrStr = NSMutableAttributedString(string: hotNumStr, attributes: attributes)
+                let boardName = board["name"] as! String
+                boardNameAttrStr.append(NSAttributedString(string: " \(boardName)"))
+                cell.titleLabel?.attributedText = boardNameAttrStr
+            }
+
+            cell.descLabel?.text = board["title"] as? String
+            
+            let imgUrlString = board["icon"] as? String
+            let placeholderImage = UIImage(named: "displogo120")
+            if imgUrlString != nil && imgUrlString != "" {
+                let url = URL(string: imgUrlString!)!
+                cell.thumbImageView?.af_setImage(withURL: url, placeholderImage: placeholderImage)
+            } else {
+                cell.thumbImageView?.image = placeholderImage
+            }
         } else {
-            cell.thumbImageView?.image = placeholderImage
+            cell = tableView.dequeueReusableCell(withIdentifier: "BoardListMoreCell", for: indexPath) as! TableViewCell
+            let remainNum = self.numBoardListTotal - self.numBoardListLoad
+            if remainNum > 0 {
+                cell.titleLabel?.text = "還有 \(remainNum) 個看板\n點此再多載入 20 個"
+            } else {
+                cell.titleLabel?.text = "看板都載入完了"
+            }
         }
+        cell.selectedBackgroundView = self.cellBackgroundView
         
         return cell
     }
@@ -108,17 +138,25 @@ class BoardListViewController: UITableViewController {
     
     // MARK: - Navigation
     
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Board" {
             guard let textListViewController = segue.destination as? TextListViewController,
                 let row = self.tableView.indexPathForSelectedRow?.row,
-                let board = self.boardListArray?[row] as? [String: Any]
+                let board = self.boardListArray[row] as? [String: Any]
                 else { return }
             textListViewController.boardName = board["name"] as? String
+            textListViewController.boardTitle = board["title"] as? String
+            textListViewController.boardIcon = board["icon"] as? String
         }
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == self.numBoardListLoad {
+            if self.numBoardListTotal - self.numBoardListLoad > 0 {
+                loadData()
+            }
+        }
+    }
 
 
 }
