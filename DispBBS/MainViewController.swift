@@ -9,10 +9,14 @@
 import UIKit
 
 class MainViewController: UIViewController {
+
+    @IBOutlet weak var tabBarScrollView: UIScrollView!
+    @IBOutlet weak var tabBarHeight: NSLayoutConstraint!
     @IBOutlet weak var hotTextButton: UIButton!
     @IBOutlet weak var boardListButton: UIButton!
+    @IBOutlet weak var boardSearchButton: UIButton!
     lazy var orderedTabButtons: [UIButton] = {
-        [self.hotTextButton, self.boardListButton]
+        [self.hotTextButton, self.boardListButton, self.boardSearchButton]
     }()
     var selectedTabIndex: Int! = 0
     
@@ -35,6 +39,8 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.definesPresentationContext = true
+        self.tabBarScrollView.scrollsToTop = false
     }
 
     override func didReceiveMemoryWarning() {
@@ -59,11 +65,16 @@ class MainViewController: UIViewController {
         changeTab(byIndex: 1)
         mainPageViewController.showPage(byIndex: 1)
     }
+    @IBAction func showBoardSearch(_ sender: Any) {
+        changeTab(byIndex: 2)
+        mainPageViewController.showPage(byIndex: 2)
+    }
     
     @IBAction func refresh(_ sender: Any) {
         switch(self.selectedTabIndex){
-        case 0: mainPageViewController.hotTextViewController.loadData()
-        case 1: mainPageViewController.boardListViewController.loadData()
+        case 0: mainPageViewController.hotTextViewController.refresh()
+        case 1: mainPageViewController.boardListViewController.refresh()
+        case 2: mainPageViewController.boardSearchViewController.refresh()
         default: return
         }
     }

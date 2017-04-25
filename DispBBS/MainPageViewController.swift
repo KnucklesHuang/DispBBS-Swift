@@ -18,9 +18,11 @@ class MainPageViewController: UIPageViewController, UIPageViewControllerDataSour
     lazy var boardListViewController: BoardListViewController = {
         self.storyboard!.instantiateViewController(withIdentifier: "BoardList") as! BoardListViewController
     }()
+    lazy var boardSearchViewController: BoardSearchViewController = {
+        self.storyboard!.instantiateViewController(withIdentifier: "BoardSearch") as! BoardSearchViewController
+    }()
     lazy var orderedViewControllers: [UIViewController] = {
-        [self.hotTextViewController,
-         self.boardListViewController]
+        [self.hotTextViewController, self.boardListViewController, self.boardSearchViewController]
     }()
 
     var willTransitionTo: UIViewController!
@@ -38,6 +40,12 @@ class MainPageViewController: UIPageViewController, UIPageViewControllerDataSour
         }
         let viewController = orderedViewControllers[index]
         setViewControllers([viewController], direction: direction, animated: true, completion: nil)
+        if selectedViewControllerIndex == 2 {
+            self.boardSearchViewController.viewDidHidePage()
+        }
+        if index == 2 {
+            self.boardSearchViewController.viewDidShowPage()
+        }
         selectedViewControllerIndex = index
     }
 
@@ -48,7 +56,12 @@ class MainPageViewController: UIPageViewController, UIPageViewControllerDataSour
         self.dataSource = self
         self.delegate = self
         self.selectedViewControllerIndex = 0
-
+        
+        self.boardSearchViewController.mainViewController = self.mainViewController
+        
+        setViewControllers([hotTextViewController], direction: .forward, animated: false, completion: nil)
+        // preload next page
+        setViewControllers([boardListViewController], direction: .forward, animated: false, completion: nil)
         setViewControllers([hotTextViewController], direction: .forward, animated: false, completion: nil)
     }
 
@@ -89,14 +102,19 @@ class MainPageViewController: UIPageViewController, UIPageViewControllerDataSour
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         if completed {
-            if let index = orderedViewControllers.index(of: self.willTransitionTo) {
+            guard let index = orderedViewControllers.index(of: self.willTransitionTo) else { return }
+            let previousViewController = previousViewControllers.first!
+            let previousIndex = orderedViewControllers.index(of: previousViewController)
+            if index != previousIndex {
                 mainViewController.changeTab(byIndex: index)
                 self.selectedViewControllerIndex = index
             }
+            if previousIndex == 2 {
+                self.boardSearchViewController.viewDidHidePage()
+            }
+            if index == 2 {
+                self.boardSearchViewController.viewDidShowPage()
+            }
         }
     }
-    
-    
-
-
 }

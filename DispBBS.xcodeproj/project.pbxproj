@@ -20,6 +20,8 @@
 		DDB847F81E64C9830044C003 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DDB847F61E64C9830044C003 /* LaunchScreen.storyboard */; };
 		DDB848001E67B55E0044C003 /* HotTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB847FF1E67B55E0044C003 /* HotTextViewController.swift */; };
 		DDB848021E68F9710044C003 /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB848011E68F9710044C003 /* TableViewCell.swift */; };
+		DDC0873B1EAD120700A9E4DE /* CoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DDC087391EAD120700A9E4DE /* CoreData.xcdatamodeld */; };
+		DDD635C71EA7725100A79F8C /* BoardSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		DDB847F91E64C9830044C003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DDB847FF1E67B55E0044C003 /* HotTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HotTextViewController.swift; sourceTree = "<group>"; };
 		DDB848011E68F9710044C003 /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
+		DDC0873A1EAD120700A9E4DE /* CoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreData.xcdatamodel; sourceTree = "<group>"; };
+		DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardSearchViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,8 +104,10 @@
 				DDB848011E68F9710044C003 /* TableViewCell.swift */,
 				DDB847FF1E67B55E0044C003 /* HotTextViewController.swift */,
 				DD43015C1E9BBE6400753D48 /* BoardListViewController.swift */,
+				DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */,
 				DD43015E1E9D36BB00753D48 /* TextListViewController.swift */,
 				DD0214FC1E7514670098187F /* TextViewController.swift */,
+				DDC087391EAD120700A9E4DE /* CoreData.xcdatamodeld */,
 				DDB847F41E64C9830044C003 /* Assets.xcassets */,
 				DDB847F61E64C9830044C003 /* LaunchScreen.storyboard */,
 				DDB847F91E64C9830044C003 /* Info.plist */,
@@ -236,8 +242,10 @@
 			files = (
 				DD43015D1E9BBE6400753D48 /* BoardListViewController.swift in Sources */,
 				DDB847EE1E64C9830044C003 /* AppDelegate.swift in Sources */,
+				DDC0873B1EAD120700A9E4DE /* CoreData.xcdatamodeld in Sources */,
 				DDB848001E67B55E0044C003 /* HotTextViewController.swift in Sources */,
 				DDB848021E68F9710044C003 /* TableViewCell.swift in Sources */,
+				DDD635C71EA7725100A79F8C /* BoardSearchViewController.swift in Sources */,
 				DD0214FD1E7514670098187F /* TextViewController.swift in Sources */,
 				DD43015B1E9B9FB900753D48 /* MainPageViewController.swift in Sources */,
 				DD4301591E9B9F5900753D48 /* MainViewController.swift in Sources */,
@@ -412,6 +420,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		DDC087391EAD120700A9E4DE /* CoreData.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				DDC0873A1EAD120700A9E4DE /* CoreData.xcdatamodel */,
+			);
+			currentVersion = DDC0873A1EAD120700A9E4DE /* CoreData.xcdatamodel */;
+			path = CoreData.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = DDB847E21E64C9830044C003 /* Project object */;
 }

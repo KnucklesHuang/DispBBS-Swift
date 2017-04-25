@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 import Alamofire
 import AlamofireImage
 
@@ -18,31 +19,30 @@ class TextListViewController: UITableViewController {
     var numTextListTotal: Int = 0
     var numPageLoad: Int = 0
     
-    var cellBackgroundView = UIView()
+    var cellSelectedBackgroundView = UIView()
     var boardId: String!
     var boardName: String!
     var boardTitle: String!
     var boardIcon: String!
     
     func loadData() {
-        let urlString = "https://disp.cc/api/board.php?act=tlist&bn=\(self.boardName!)&pageNum=\(self.numPageLoad)"
+        let urlString = "https://disp.cc/api/board.php?act=tlist&bn=\(boardName!)&pageNum=\(numPageLoad)"
         Alamofire.request(urlString).responseJSON { response in
             if (self.refreshControl?.isRefreshing)! {
                 self.refreshControl?.endRefreshing()
             }
-            
             guard response.result.isSuccess else {
                 let errorMessage = response.result.error?.localizedDescription
                 self.alert(message: errorMessage!)
                 return
             }
             guard let JSON = response.result.value as? [String: Any],
-                let isSuccess = JSON["isSuccess"] as? Int,
-                let errorMessage = JSON["errorMessage"] as? String else {
+                let isSuccess = JSON["isSuccess"] as? Int else {
                     self.alert(message: "JSON formate error")
                     return
             }
-            if isSuccess != 1 {
+            guard isSuccess == 1 else {
+                let errorMessage = JSON["errorMessage"] as? String ?? "error"
                 self.alert(message: errorMessage)
                 return
             }
@@ -56,16 +56,16 @@ class TextListViewController: UITableViewController {
                     if let botList = data["botList"] as? [Any] {
                         self.botListArray.append(contentsOf: botList)
                     }
+                    self.setTableHeaderView()
                 }
                 self.textListArray.append(contentsOf: tlist)
                 self.numTextListLoad = self.textListArray.count
                 self.numTextListTotal = data["totalNum"] as! Int
                 self.numPageLoad += 1
                 self.tableView.reloadData()
+                self.saveBoardHistory()
             }
-            
         }
-        
     }
     
     func alert(message: String) {
@@ -74,74 +74,34 @@ class TextListViewController: UITableViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        loadData()
-        
-        self.refreshControl?.addTarget(self, action: #selector(loadData), for: UIControlEvents.valueChanged)
-        
-        self.cellBackgroundView.backgroundColor = UIColor.darkGray
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    // MARK: - Table view data source
-    
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch(section) {
-        case 0: return 1
-        case 1: return self.botListArray.count
-        case 2: return self.numTextListLoad
-        case 3: return 1
-        default: return 0
-        }
-    }
+    func saveBoardHistory() {
+        let managedContext = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext
+        let entity = NSEntityDescription.entity(forEntityName: "BoardHistory", in: managedContext)!
 
-    // section header height
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 1 && self.botListArray.count > 0 {
-            return 18
-        } else if section == 2 && self.numTextListLoad > 0 {
-            return 18
-        } else {
-            return 0
+        // 先刪除這個看板之前的瀏覽記錄
+        let fetchRequest = NSFetchRequest<BoardHistory>(entityName: "BoardHistory")
+        fetchRequest.predicate = NSPredicate(format: "name == %@", self.boardName!)
+        if let fetchResult = try? managedContext.fetch(fetchRequest) {
+            for delBoard in fetchResult {
+                managedContext.delete(delBoard)
+            }
+        }
+        
+        let insBoard = BoardHistory(entity: entity, insertInto: managedContext)
+        insBoard.bi = Int16(self.boardId)!
+        insBoard.name = self.boardName
+        insBoard.title = self.boardTitle
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
         }
     }
     
-    // row height
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch(indexPath.section) {
-        case 0: return 80
-        case 1: return 46
-        default: return 100
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TextListHeaderCell") as! TableViewCell
-        if section == 1 {
-            cell.titleLabel.text = "置頂文章"
-            cell.descLabel.text = ""
-        } else if section == 2 {
-            cell.titleLabel.text = "最新文章"
-            cell.descLabel.text = "看板《\(self.boardName!)》"
-        }
-        return cell
-    }
-    
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell: TableViewCell
-        if indexPath.section == 0 {
-            cell = tableView.dequeueReusableCell(withIdentifier: "BoardHeaderCell", for: indexPath) as! TableViewCell
+    func setTableHeaderView() {
+        // set TableHeaderView
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "BoardHeaderCell") as? TableViewCell{
             cell.titleLabel.text = self.boardName
             cell.descLabel.text = self.boardTitle
             
@@ -152,10 +112,85 @@ class TextListViewController: UITableViewController {
             } else {
                 cell.thumbImageView?.image = placeholderImage
             }
-            
-        } else if indexPath.section == 1 || indexPath.section == 2 {
+            self.tableView.tableHeaderView = cell
+        }
+    }
+    
+    func refresh() {
+        textListArray.removeAll()
+        botListArray.removeAll()
+        self.numPageLoad = 0
+        self.numTextListLoad = 0
+        loadData()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        loadData()
+        
+        self.refreshControl?.addTarget(self, action: #selector(refresh), for: UIControlEvents.valueChanged)
+        self.cellSelectedBackgroundView.backgroundColor = UIColor.darkGray
+        
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    // MARK: - Table view data source
+    
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 3
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch(section) {
+        case 0: return self.botListArray.count
+        case 1: return self.numTextListLoad
+        case 2: return 1
+        default: return 0
+        }
+    }
+
+    // section header height
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 && self.botListArray.count > 0 {
+            return 18
+        } else if section == 1 && self.numTextListLoad > 0 {
+            return 18
+        } else {
+            return 0
+        }
+    }
+    
+    // row height
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch(indexPath.section) {
+        case 0: return 46
+        default: return 100
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TextListHeaderCell") as! TableViewCell
+        if section == 0 {
+            cell.titleLabel.text = "置頂文章"
+            cell.descLabel.text = ""
+        } else if section == 1 {
+            cell.titleLabel.text = "最新文章"
+            cell.descLabel.text = "看板《\(self.boardName!)》"
+        }
+        return cell
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell: TableViewCell
+        if indexPath.section == 0 || indexPath.section == 1 {
             var dataArray: [Any]
-            if indexPath.section == 1 {
+            if indexPath.section == 0 {
                 cell = tableView.dequeueReusableCell(withIdentifier: "BotListCell", for: indexPath) as! TableViewCell
                 dataArray = self.botListArray
             } else {
@@ -167,9 +202,9 @@ class TextListViewController: UITableViewController {
             }
             
             let pushNum = text["push_num"] as! Int
-            let title = text["title"] as! String
+            let titleStr = text["title"] as! String
             if pushNum == 0 {
-                cell.titleLabel?.text = title
+                cell.titleLabel?.text = titleStr
             } else {
                 var pushNumStr = "+\(pushNum)"
                 var pushNumColor = UIColor.white
@@ -177,10 +212,10 @@ class TextListViewController: UITableViewController {
                     pushNumStr = "\(pushNum)"
                     pushNumColor = UIColor.darkGray
                 }
-                let attributes = [NSForegroundColorAttributeName: pushNumColor]
-                let titleAttrStr = NSMutableAttributedString(string: pushNumStr, attributes: attributes)
-                titleAttrStr.append(NSAttributedString(string: " \(title)"))
-                cell.titleLabel.attributedText = titleAttrStr
+                let pushNumAttr = [NSForegroundColorAttributeName: pushNumColor]
+                let attrStr = NSMutableAttributedString(string: pushNumStr, attributes: pushNumAttr)
+                attrStr.append(NSAttributedString(string: " \(titleStr)"))
+                cell.titleLabel.attributedText = attrStr
             }
             
             cell.descLabel?.text = text["desc"] as? String
@@ -193,7 +228,7 @@ class TextListViewController: UITableViewController {
                 let darkRed = UIColor(red: 0x80/255.0, green: 0, blue: 0, alpha: 1.0)
                 let attributes = [NSForegroundColorAttributeName: UIColor.black,
                                   NSBackgroundColorAttributeName: darkRed]
-                let hotAttrStr = NSMutableAttributedString(string: hotNumStr, attributes: attributes)
+                let hotAttrStr = NSAttributedString(string: hotNumStr, attributes: attributes)
                 cell.hotNumLabel.attributedText = hotAttrStr
             }
             
@@ -204,7 +239,7 @@ class TextListViewController: UITableViewController {
                 cell.infoLabel?.text = timeString.substring(with: start..<end)+" "+authorString
             }
             
-            if indexPath.section == 2 {
+            if indexPath.section == 1 {
                 let imgUrlString = text["thumb"] as? String
                 let placeholderImage = UIImage(named: "displogo120")
                 if imgUrlString != nil && imgUrlString != "" {
@@ -216,19 +251,18 @@ class TextListViewController: UITableViewController {
                     cell.thumbWidthConstraint.constant = 0
                 }
             }
-            cell.selectedBackgroundView = self.cellBackgroundView
             
         } else {
             cell = tableView.dequeueReusableCell(withIdentifier: "TextListMoreCell", for: indexPath) as! TableViewCell
             let remainNum = self.numTextListTotal - self.numTextListLoad
             if remainNum > 0 {
                 cell.titleLabel?.text = "還有 \(remainNum) 篇文章\n點此再多載入 20 篇"
-            } else if self.numTextListLoad != 0 {
+            } else if self.numTextListLoad > 0 {
                 cell.titleLabel?.text = "文章都載入完了"
             }
-            cell.selectedBackgroundView = self.cellBackgroundView
         }
 
+        cell.selectedBackgroundView = self.cellSelectedBackgroundView
         return cell
     }
     
@@ -256,8 +290,8 @@ class TextListViewController: UITableViewController {
     }
  
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 3 { //點擊載入更多按鈕
-            if self.numTextListTotal - self.numTextListLoad > 0 {
+        if indexPath.section == 2 { //點擊載入更多按鈕
+            if numTextListLoad == 0 || numTextListTotal - numTextListLoad > 0 {
                 loadData()
             }
         }

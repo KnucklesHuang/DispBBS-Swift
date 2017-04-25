@@ -11,31 +11,32 @@ import Alamofire
 import AlamofireImage
 
 class BoardListViewController: UITableViewController {
-    var cellBackgroundView = UIView()
-    var boardListArray:[Any] = []
+
+    var boardListArray = [Any]()
     var numBoardListLoad: Int = 0
     var numBoardListTotal: Int = 0
     var numPageLoad: Int = 0
+    var cellSelectedBackgroundView = UIView()
     
     func loadData() {
+        //print("BoardList loadData")
         let urlString = "https://disp.cc/api/board.php?act=blist&pageNum=\(numPageLoad)"
         Alamofire.request(urlString).responseJSON { response in
             if (self.refreshControl?.isRefreshing)! {
                 self.refreshControl?.endRefreshing()
             }
-            
             guard response.result.isSuccess else {
                 let errorMessage = response.result.error?.localizedDescription
                 self.alert(message: errorMessage!)
                 return
             }
             guard let JSON = response.result.value as? [String: Any],
-                let isSuccess = JSON["isSuccess"] as? Int,
-                let errorMessage = JSON["errorMessage"] as? String else {
+                let isSuccess = JSON["isSuccess"] as? Int else {
                 self.alert(message: "JSON formate error")
                 return
             }
-            if isSuccess != 1 {
+            guard isSuccess == 1 else {
+                let errorMessage = JSON["errorMessage"] as? String ?? "error"
                 self.alert(message: errorMessage)
                 return
             }
@@ -58,39 +59,44 @@ class BoardListViewController: UITableViewController {
         alert.addAction(UIAlertAction(title: "確定", style: .default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
+    
+    func refresh() {
+        boardListArray.removeAll()
+        self.numPageLoad = 0
+        self.numBoardListLoad = 0
+        loadData()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         loadData()
         
-        self.refreshControl?.addTarget(self, action: #selector(loadData), for: UIControlEvents.valueChanged)
-        
-        self.cellBackgroundView.backgroundColor = UIColor.darkGray
+        self.refreshControl?.addTarget(self, action: #selector(refresh), for: UIControlEvents.valueChanged)
+        self.cellSelectedBackgroundView.backgroundColor = UIColor.darkGray
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var num: Int = 0
-        if self.numBoardListLoad > 0 {
-            // 加上一個載入更多按鈕
-            num = self.boardListArray.count + 1
+        if section == 0 {
+            return self.boardListArray.count
+        } else {
+            return 1
         }
-        return num
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: TableViewCell
-        if indexPath.row < self.numBoardListLoad {
+        if indexPath.section == 0 {
             cell = tableView.dequeueReusableCell(withIdentifier: "BoardListCell", for: indexPath) as! TableViewCell
             
             guard let board = self.boardListArray[indexPath.row] as? [String: Any] else {
@@ -103,12 +109,12 @@ class BoardListViewController: UITableViewController {
                 cell.titleLabel?.text = board["name"] as? String
             } else {
                 let darkRed = UIColor(red: 0x80/255.0, green: 0, blue: 0, alpha: 1.0)
-                let attributes = [NSForegroundColorAttributeName: UIColor.black,
+                let hotNumAttr = [NSForegroundColorAttributeName: UIColor.black,
                                   NSBackgroundColorAttributeName: darkRed]
-                let boardNameAttrStr = NSMutableAttributedString(string: hotNumStr, attributes: attributes)
+                let attrStr = NSMutableAttributedString(string: hotNumStr, attributes: hotNumAttr)
                 let boardName = board["name"] as! String
-                boardNameAttrStr.append(NSAttributedString(string: " \(boardName)"))
-                cell.titleLabel?.attributedText = boardNameAttrStr
+                attrStr.append(NSAttributedString(string: " \(boardName)"))
+                cell.titleLabel?.attributedText = attrStr
             }
 
             cell.descLabel?.text = board["title"] as? String
@@ -126,11 +132,11 @@ class BoardListViewController: UITableViewController {
             let remainNum = self.numBoardListTotal - self.numBoardListLoad
             if remainNum > 0 {
                 cell.titleLabel?.text = "還有 \(remainNum) 個看板\n點此再多載入 20 個"
-            } else {
+            } else if self.numBoardListLoad > 0{
                 cell.titleLabel?.text = "看板都載入完了"
             }
         }
-        cell.selectedBackgroundView = self.cellBackgroundView
+        cell.selectedBackgroundView = self.cellSelectedBackgroundView
         
         return cell
     }
@@ -151,8 +157,8 @@ class BoardListViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == self.numBoardListLoad {
-            if self.numBoardListTotal - self.numBoardListLoad > 0 {
+        if indexPath.section == 1 {
+            if numBoardListLoad == 0 || numBoardListTotal - numBoardListLoad > 0 {
                 loadData()
             }
         }

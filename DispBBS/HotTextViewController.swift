@@ -35,9 +35,7 @@ class HotTextViewController: UITableViewController {
                 self.hotTextArray = list
                 self.tableView.reloadData()
             }
-            
         }
-        
     }
     
     func alert(message: String) {
@@ -46,17 +44,19 @@ class HotTextViewController: UITableViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    func refresh() {
+        loadData()
+    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         loadData()
         
-        self.refreshControl?.addTarget(self, action: #selector(loadData), for: UIControlEvents.valueChanged)
+        self.refreshControl?.addTarget(self, action: #selector(refresh), for: UIControlEvents.valueChanged)
         
         self.cellBackgroundView.backgroundColor = UIColor.darkGray
-
-        
     }
 
     override func didReceiveMemoryWarning() {
