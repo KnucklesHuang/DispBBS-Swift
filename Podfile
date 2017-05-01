@@ -6,8 +6,9 @@ target 'DispBBS' do
   use_frameworks!
 
   # Pods for DispBBS
-  pod 'Alamofire'
-  pod 'AlamofireImage'
-  pod 'AlamofireNetworkActivityIndicator'
+  pod 'Alamofire', '~> 4.4.0'
+  pod 'AlamofireImage', '~> 3.2.0'
+  pod 'AlamofireNetworkActivityIndicator', '~> 2.1.0'
+  pod 'KeychainSwift', '~> 8.0'
 
 end

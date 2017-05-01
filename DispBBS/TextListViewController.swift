@@ -24,10 +24,14 @@ class TextListViewController: UITableViewController {
     var boardName: String!
     var boardTitle: String!
     var boardIcon: String!
+
+    let userId = (UIApplication.shared.delegate as! AppDelegate).userId
     
     func loadData() {
         let urlString = "https://disp.cc/api/board.php?act=tlist&bn=\(boardName!)&pageNum=\(numPageLoad)"
-        Alamofire.request(urlString).responseJSON { response in
+        let isLogin = (userId > 0) ? 1 : 0
+        let parameters: Parameters = ["isLogin": isLogin]
+        Alamofire.request(urlString, method: .post, parameters: parameters).responseJSON { response in
             if (self.refreshControl?.isRefreshing)! {
                 self.refreshControl?.endRefreshing()
             }

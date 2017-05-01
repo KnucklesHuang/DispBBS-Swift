@@ -19,9 +19,10 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
     var shouldShowSearchResult = false
     var searchController: UISearchController!
     var cellSelectedBackgroundView = UIView()
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     func loadBoardHistoryList() {
-        let managedContext = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext
+        let managedContext = self.appDelegate.managedObjectContext
 
         let fetchRequest = NSFetchRequest<BoardHistory>(entityName: "BoardHistory")
 
@@ -34,7 +35,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
     }
     
     func clearBoardHistoryList() {
-        let managedContext = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext
+        let managedContext = self.appDelegate.managedObjectContext
 
         let fetchRequest = NSFetchRequest<BoardHistory>(entityName: "BoardHistory")
         if let fetchResult = try? managedContext.fetch(fetchRequest) {
@@ -53,7 +54,9 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
     
     func loadBoardAllList() {
         let urlString = "https://disp.cc/api/get.php?act=bSearchList"
-        Alamofire.request(urlString).responseJSON { response in
+        let isLogin = (appDelegate.userId > 0) ? 1 : 0
+        let parameters: Parameters = ["isLogin": isLogin]
+        Alamofire.request(urlString, method: .post, parameters: parameters).responseJSON { response in
             guard response.result.isSuccess else {
                 let errorMessage = response.result.error?.localizedDescription
                 self.alert(message: errorMessage!)

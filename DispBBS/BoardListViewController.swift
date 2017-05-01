@@ -21,7 +21,10 @@ class BoardListViewController: UITableViewController {
     func loadData() {
         //print("BoardList loadData")
         let urlString = "https://disp.cc/api/board.php?act=blist&pageNum=\(numPageLoad)"
-        Alamofire.request(urlString).responseJSON { response in
+        let userId = (UIApplication.shared.delegate as! AppDelegate).userId
+        let isLogin = (userId > 0) ? 1 : 0
+        let parameters: Parameters = ["isLogin": isLogin]
+        Alamofire.request(urlString, method: .post, parameters: parameters).responseJSON { response in
             if (self.refreshControl?.isRefreshing)! {
                 self.refreshControl?.endRefreshing()
             }

@@ -16,6 +16,8 @@ class TextViewController: UIViewController, UIWebViewDelegate {
     @IBOutlet weak var webView: UIWebView!
     @IBOutlet weak var goBackBtn: UIBarButtonItem!
     
+    let userId = (UIApplication.shared.delegate as! AppDelegate).userId
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
