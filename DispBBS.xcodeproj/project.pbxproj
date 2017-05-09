@@ -24,7 +24,7 @@
 		DDC0873B1EAD120700A9E4DE /* CoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DDC087391EAD120700A9E4DE /* CoreData.xcdatamodeld */; };
 		DDC0873D1EAF421E00A9E4DE /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC0873C1EAF421E00A9E4DE /* LoginViewController.swift */; };
 		DDC0873F1EB7857F00A9E4DE /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC0873E1EB7857F00A9E4DE /* EditorViewController.swift */; };
-		DDD1DFCB1EC21BF100ADF4C2 /* keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDD1DFCA1EC21BF100ADF4C2 /* keys.plist */; };
+		DDD1DFCD1EC227DC00ADF4C2 /* keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDD1DFCC1EC227DC00ADF4C2 /* keys.plist */; };
 		DDD635C71EA7725100A79F8C /* BoardSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -50,7 +50,7 @@
 		DDC0873A1EAD120700A9E4DE /* CoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreData.xcdatamodel; sourceTree = "<group>"; };
 		DDC0873C1EAF421E00A9E4DE /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		DDC0873E1EB7857F00A9E4DE /* EditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
-		DDD1DFCA1EC21BF100ADF4C2 /* keys.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = keys.plist; sourceTree = "<group>"; };
+		DDD1DFCC1EC227DC00ADF4C2 /* keys.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = keys.plist; sourceTree = "<group>"; };
 		DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardSearchViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -87,7 +87,6 @@
 			isa = PBXGroup;
 			children = (
 				DD776E081E82AECC005B895C /* .gitignore */,
-				DDD1DFCA1EC21BF100ADF4C2 /* keys.plist */,
 				DDB847EC1E64C9830044C003 /* DispBBS */,
 				DDB847EB1E64C9830044C003 /* Products */,
 				51134B211D48829B1B71CE44 /* Pods */,
@@ -123,6 +122,7 @@
 				DDB847F41E64C9830044C003 /* Assets.xcassets */,
 				DDB847F61E64C9830044C003 /* LaunchScreen.storyboard */,
 				DDB847F91E64C9830044C003 /* Info.plist */,
+				DDD1DFCC1EC227DC00ADF4C2 /* keys.plist */,
 			);
 			path = DispBBS;
 			sourceTree = "<group>";
@@ -190,7 +190,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DDD1DFCB1EC21BF100ADF4C2 /* keys.plist in Resources */,
+				DDD1DFCD1EC227DC00ADF4C2 /* keys.plist in Resources */,
 				DD776E091E82AECC005B895C /* .gitignore in Resources */,
 				DDB847F81E64C9830044C003 /* LaunchScreen.storyboard in Resources */,
 				DDB847F51E64C9830044C003 /* Assets.xcassets in Resources */,
