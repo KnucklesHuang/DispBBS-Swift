@@ -13,7 +13,8 @@ import Alamofire
 class BoardSearchViewController: UITableViewController, UISearchResultsUpdating, UISearchBarDelegate {
     var mainViewController: MainViewController!
 
-    var boardHistoryList = [BoardHistory]()
+//    var boardHistoryList = [BoardHistory]()
+    var boardHistoryList = [[String: String]]()
     var boardAllList = [Any]()
     var boardSearchResult = [Any]()
     var shouldShowSearchResult = false
@@ -25,13 +26,20 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
         let managedContext = self.appDelegate.managedObjectContext
 
         let fetchRequest = NSFetchRequest<BoardHistory>(entityName: "BoardHistory")
-
+        var fetchResult = [BoardHistory]()
         do {
-            self.boardHistoryList = try managedContext.fetch(fetchRequest).reversed()
-            self.tableView.reloadData()
+            fetchResult = try managedContext.fetch(fetchRequest).reversed()
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
+        
+        self.boardHistoryList.removeAll()
+        for board in fetchResult {
+            if let boardName = board.name, let boardTitle = board.title {
+                self.boardHistoryList.append(["name": boardName, "title": boardTitle])
+            }
+        }
+        self.tableView.reloadData()
     }
     
     func clearBoardHistoryList() {
@@ -84,7 +92,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
         self.present(alert, animated: true, completion: nil)
     }
     
-    func configureSearchController() {
+    func initSearchController() {
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
@@ -92,6 +100,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
         let searchBar = searchController.searchBar
         searchBar.delegate = self
         searchBar.placeholder = "請輸入看板名稱"
+        searchBar.setValue("取消", forKey:"_cancelButtonText")
         searchBar.sizeToFit()
         
         tableView.tableHeaderView = searchBar
@@ -118,7 +127,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
         super.viewDidLoad()
 
         self.cellSelectedBackgroundView.backgroundColor = UIColor.darkGray
-        configureSearchController()
+        initSearchController()
         
         //要加在主頁面才行
         //self.definesPresentationContext = true
@@ -185,8 +194,8 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
             boardTitle = board["title"] as! String
         } else {
             let board = boardHistoryList[indexPath.row]
-            boardName = board.name!
-            boardTitle = board.title!
+            boardName = board["name"]!
+            boardTitle = board["title"]!
         }
         let attrStr = NSMutableAttributedString(string: boardName)
         let titleAttr = [NSForegroundColorAttributeName: UIColor.white]
@@ -199,29 +208,6 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
     }
 
 
-    // MARK: - Navigation
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "Board" {
-            guard let textListViewController = segue.destination as? TextListViewController,
-                let row = self.tableView.indexPathForSelectedRow?.row
-                else { return }
-
-            var boardName: String, boardTitle: String
-            if shouldShowSearchResult {
-                let board = self.boardSearchResult[row] as! [String: Any]
-                boardName = board["name"] as! String
-                boardTitle = board["title"] as! String
-            } else {
-                let board = self.boardHistoryList[row]
-                boardName = board.name!
-                boardTitle = board.title!
-            }
-            textListViewController.boardName = boardName
-            textListViewController.boardTitle = boardTitle
-        }
-    }
-    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if !shouldShowSearchResult && boardHistoryList.count > 0 && indexPath.row == boardHistoryList.count {
             let alert = UIAlertController(title: "清除瀏覽記錄", message: "確定要清除看板的瀏覽記錄嗎？", preferredStyle: .alert)
@@ -298,5 +284,28 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
         shouldShowSearchResult = true
         tableView.reloadData()
     }
-
+    
+    // MARK: - Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "Board" {
+            guard let textListViewController = segue.destination as? TextListViewController,
+                let row = self.tableView.indexPathForSelectedRow?.row
+                else { return }
+            
+            var boardName: String, boardTitle: String
+            if shouldShowSearchResult {
+                let board = self.boardSearchResult[row] as! [String: Any]
+                boardName = board["name"] as! String
+                boardTitle = board["title"] as! String
+            } else {
+                let board = self.boardHistoryList[row]
+                boardName = board["name"]!
+                boardTitle = board["title"]!
+            }
+            textListViewController.boardName = boardName
+            textListViewController.boardTitle = boardTitle
+        }
+    }
+    
 }

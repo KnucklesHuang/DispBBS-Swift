@@ -105,9 +105,9 @@ class HotTextViewController: UITableViewController {
         cell.descLabel?.text = "\(author) \(desc)"
         
         let imgList = hotText["img_list"] as? [String]
-        let placeholderImage = UIImage(named: "AppIcon")
+        let placeholderImage = UIImage(named: "displogo120")
         if imgList?.count != 0 {
-            let url = URL(string: (imgList?[0])!)!
+            let url = URL(string: (imgList?.first)!)!
             cell.thumbImageView?.af_setImage(withURL: url, placeholderImage: placeholderImage)
         } else {
             cell.thumbImageView?.image = placeholderImage
@@ -127,8 +127,11 @@ class HotTextViewController: UITableViewController {
                 let hotText = self.hotTextArray?[row] as? [String: Any]
                 else { return }
 
-            textViewController.bi = hotText["bi"] as? String
-            textViewController.ti = hotText["ti"] as? String
+            textViewController.boardId = hotText["bi"] as? String
+            textViewController.textId = hotText["ti"] as? String
+            textViewController.authorId = hotText["ai"] as? Int
+            textViewController.textTitle = hotText["title"] as? String
+            textViewController.boardName = hotText["board_name"] as? String
         }
     }
     

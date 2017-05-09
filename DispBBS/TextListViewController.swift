@@ -11,7 +11,7 @@ import CoreData
 import Alamofire
 import AlamofireImage
 
-class TextListViewController: UITableViewController {
+class TextListViewController: UITableViewController, EditorViewControllerDelegate, LoginViewControllerDelegate {
 
     var textListArray:[Any] = []
     var botListArray:[Any] = []
@@ -20,12 +20,13 @@ class TextListViewController: UITableViewController {
     var numPageLoad: Int = 0
     
     var cellSelectedBackgroundView = UIView()
+
     var boardId: String!
     var boardName: String!
     var boardTitle: String!
     var boardIcon: String!
 
-    let userId = (UIApplication.shared.delegate as! AppDelegate).userId
+    var userId = (UIApplication.shared.delegate as! AppDelegate).userId
     
     func loadData() {
         let urlString = "https://disp.cc/api/board.php?act=tlist&bn=\(boardName!)&pageNum=\(numPageLoad)"
@@ -120,7 +121,35 @@ class TextListViewController: UITableViewController {
         }
     }
     
-    func refresh() {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        loadData()
+        
+        self.refreshControl?.addTarget(self, action: #selector(refresh(_:)), for: UIControlEvents.valueChanged)
+        self.cellSelectedBackgroundView.backgroundColor = UIColor.darkGray
+        
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    @IBAction func post(_ sender: Any) {
+        if userId == 0 {
+            let alert = UIAlertController(title: "尚未登入", message: "發表文章需要登入帳號，要現在登入嗎？", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "確定", style: .default, handler: { action in
+                self.performSegue(withIdentifier: "Login", sender: self)
+            }))
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            self.performSegue(withIdentifier: "Post", sender: self)
+        }
+
+    }
+    
+    @IBAction func refresh(_ sender: Any) {
         textListArray.removeAll()
         botListArray.removeAll()
         self.numPageLoad = 0
@@ -128,18 +157,8 @@ class TextListViewController: UITableViewController {
         loadData()
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        loadData()
-        
-        self.refreshControl?.addTarget(self, action: #selector(refresh), for: UIControlEvents.valueChanged)
-        self.cellSelectedBackgroundView.backgroundColor = UIColor.darkGray
-        
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+    @IBAction func unwindToTextList(segue: UIStoryboardSegue) {
+        refresh(self)
     }
     
     // MARK: - Table view data source
@@ -269,30 +288,8 @@ class TextListViewController: UITableViewController {
         cell.selectedBackgroundView = self.cellSelectedBackgroundView
         return cell
     }
-    
-    // MARK: - Navigation
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "BotRead" {
-            guard let textViewController = segue.destination as? TextViewController,
-                let indexPath = self.tableView.indexPathForSelectedRow,
-                let text = self.botListArray[indexPath.row] as? [String: Any]
-                else { return }
-            
-            textViewController.bi = self.boardId
-            textViewController.ti = text["ti"] as? String
-            
-        } else if segue.identifier == "TextRead" {
-            guard let textViewController = segue.destination as? TextViewController,
-                let indexPath = self.tableView.indexPathForSelectedRow,
-                let text = self.textListArray[indexPath.row] as? [String: Any]
-                else { return }
-            
-            textViewController.bi = self.boardId
-            textViewController.ti = text["ti"] as? String
-        }
-    }
- 
+
+    // 點擊了某一列
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 2 { //點擊載入更多按鈕
             if numTextListLoad == 0 || numTextListTotal - numTextListLoad > 0 {
@@ -300,5 +297,58 @@ class TextListViewController: UITableViewController {
             }
         }
     }
-
+    
+    // MARK: - EditorViewController delegate
+    
+    func editorDidSaveText() {
+        refresh(self)
+    }
+    
+    // MARK: - LoginViewController delegate
+    
+    func didLogin(userId: Int, userName: String) {
+        self.userId = userId
+        refresh(self)
+    }
+    
+    // MARK: - Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "BotRead" || segue.identifier == "TextRead" {
+            guard let textViewController = segue.destination as? TextViewController,
+                let indexPath = self.tableView.indexPathForSelectedRow
+                else { return }
+            
+            var text: [String: Any]?
+            if indexPath.section == 0 {
+                text = self.botListArray[indexPath.row] as? [String: Any]
+            } else {
+                text = self.textListArray[indexPath.row] as? [String: Any]
+            }
+            
+            textViewController.boardId = self.boardId
+            textViewController.textId = text?["ti"] as? String
+            textViewController.authorId = text?["ai"] as? Int
+            textViewController.textTitle = text?["title"] as? String
+            textViewController.boardName = self.boardName
+            
+        } else if segue.identifier == "Post" {
+            guard let navigationController = segue.destination as? UINavigationController,
+                let editorViewController = navigationController.topViewController as? EditorViewController
+                else { return }
+            
+            editorViewController.boardId = self.boardId
+            editorViewController.textId = ""
+            editorViewController.targetName = self.boardName
+            editorViewController.type = "new"
+            editorViewController.delegate = self
+            
+        } else if segue.identifier == "Login" {
+            guard let loginViewController = segue.destination as? LoginViewController
+                else { return }
+            loginViewController.delegate = self
+            
+        }
+    }
+ 
 }

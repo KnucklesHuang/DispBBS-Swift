@@ -158,7 +158,6 @@ class MainViewController: UIViewController, LoginViewControllerDelegate {
 
         self.loginButton.title = ""
         appInit()
-    
     }
 
     override func didReceiveMemoryWarning() {

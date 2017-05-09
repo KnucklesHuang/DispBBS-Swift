@@ -20,8 +20,11 @@
 		DDB847F81E64C9830044C003 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DDB847F61E64C9830044C003 /* LaunchScreen.storyboard */; };
 		DDB848001E67B55E0044C003 /* HotTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB847FF1E67B55E0044C003 /* HotTextViewController.swift */; };
 		DDB848021E68F9710044C003 /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB848011E68F9710044C003 /* TableViewCell.swift */; };
+		DDC0032D1EB9D42C00A1F98B /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC0032C1EB9D42C00A1F98B /* PreviewViewController.swift */; };
 		DDC0873B1EAD120700A9E4DE /* CoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DDC087391EAD120700A9E4DE /* CoreData.xcdatamodeld */; };
 		DDC0873D1EAF421E00A9E4DE /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC0873C1EAF421E00A9E4DE /* LoginViewController.swift */; };
+		DDC0873F1EB7857F00A9E4DE /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC0873E1EB7857F00A9E4DE /* EditorViewController.swift */; };
+		DDD1DFCB1EC21BF100ADF4C2 /* keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDD1DFCA1EC21BF100ADF4C2 /* keys.plist */; };
 		DDD635C71EA7725100A79F8C /* BoardSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -43,8 +46,11 @@
 		DDB847F91E64C9830044C003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DDB847FF1E67B55E0044C003 /* HotTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HotTextViewController.swift; sourceTree = "<group>"; };
 		DDB848011E68F9710044C003 /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
+		DDC0032C1EB9D42C00A1F98B /* PreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
 		DDC0873A1EAD120700A9E4DE /* CoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreData.xcdatamodel; sourceTree = "<group>"; };
 		DDC0873C1EAF421E00A9E4DE /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		DDC0873E1EB7857F00A9E4DE /* EditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
+		DDD1DFCA1EC21BF100ADF4C2 /* keys.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = keys.plist; sourceTree = "<group>"; };
 		DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardSearchViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -81,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				DD776E081E82AECC005B895C /* .gitignore */,
+				DDD1DFCA1EC21BF100ADF4C2 /* keys.plist */,
 				DDB847EC1E64C9830044C003 /* DispBBS */,
 				DDB847EB1E64C9830044C003 /* Products */,
 				51134B211D48829B1B71CE44 /* Pods */,
@@ -110,6 +117,8 @@
 				DD43015E1E9D36BB00753D48 /* TextListViewController.swift */,
 				DD0214FC1E7514670098187F /* TextViewController.swift */,
 				DDC0873C1EAF421E00A9E4DE /* LoginViewController.swift */,
+				DDC0873E1EB7857F00A9E4DE /* EditorViewController.swift */,
+				DDC0032C1EB9D42C00A1F98B /* PreviewViewController.swift */,
 				DDC087391EAD120700A9E4DE /* CoreData.xcdatamodeld */,
 				DDB847F41E64C9830044C003 /* Assets.xcassets */,
 				DDB847F61E64C9830044C003 /* LaunchScreen.storyboard */,
@@ -181,6 +190,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDD1DFCB1EC21BF100ADF4C2 /* keys.plist in Resources */,
 				DD776E091E82AECC005B895C /* .gitignore in Resources */,
 				DDB847F81E64C9830044C003 /* LaunchScreen.storyboard in Resources */,
 				DDB847F51E64C9830044C003 /* Assets.xcassets in Resources */,
@@ -250,9 +260,11 @@
 				DDB848021E68F9710044C003 /* TableViewCell.swift in Sources */,
 				DDD635C71EA7725100A79F8C /* BoardSearchViewController.swift in Sources */,
 				DD0214FD1E7514670098187F /* TextViewController.swift in Sources */,
+				DDC0873F1EB7857F00A9E4DE /* EditorViewController.swift in Sources */,
 				DD43015B1E9B9FB900753D48 /* MainPageViewController.swift in Sources */,
 				DD4301591E9B9F5900753D48 /* MainViewController.swift in Sources */,
 				DD43015F1E9D36BB00753D48 /* TextListViewController.swift in Sources */,
+				DDC0032D1EB9D42C00A1F98B /* PreviewViewController.swift in Sources */,
 				DDC0873D1EAF421E00A9E4DE /* LoginViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
