@@ -11,10 +11,14 @@ import CoreData
 import Alamofire
 import AlamofireImage
 
-class TextListViewController: UITableViewController, EditorViewControllerDelegate, LoginViewControllerDelegate {
+protocol TextListViewControllerDelegate {
+    func didLogin(userId: Int, userName: String)
+}
 
-    var textListArray:[Any] = []
-    var botListArray:[Any] = []
+class TextListViewController: UITableViewController, EditorViewControllerDelegate, LoginViewControllerDelegate, TextViewControllerDelegate {
+
+    var textListArray = [Any]()
+    var botListArray = [Any]()
     var numTextListLoad: Int = 0
     var numTextListTotal: Int = 0
     var numPageLoad: Int = 0
@@ -26,6 +30,7 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
     var boardTitle: String!
     var boardIcon: String!
 
+    var delegate: TextListViewControllerDelegate?
     var userId = (UIApplication.shared.delegate as! AppDelegate).userId
     
     func loadData() {
@@ -117,6 +122,7 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
             } else {
                 cell.thumbImageView?.image = placeholderImage
             }
+            cell.backgroundColor = UIColor.darkGray
             self.tableView.tableHeaderView = cell
         }
     }
@@ -205,6 +211,7 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
             cell.titleLabel.text = "最新文章"
             cell.descLabel.text = "看板《\(self.boardName!)》"
         }
+        cell.backgroundColor = UIColor.darkGray
         return cell
     }
     
@@ -284,7 +291,7 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
                 cell.titleLabel?.text = "文章都載入完了"
             }
         }
-
+        cell.backgroundColor = UIColor.black
         cell.selectedBackgroundView = self.cellSelectedBackgroundView
         return cell
     }
@@ -309,7 +316,9 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
     func didLogin(userId: Int, userName: String) {
         self.userId = userId
         refresh(self)
+        self.delegate?.didLogin(userId: userId, userName: userName)
     }
+    
     
     // MARK: - Navigation
     
@@ -329,8 +338,10 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
             textViewController.boardId = self.boardId
             textViewController.textId = text?["ti"] as? String
             textViewController.authorId = text?["ai"] as? Int
+            textViewController.authorName = text?["author"] as? String
             textViewController.textTitle = text?["title"] as? String
             textViewController.boardName = self.boardName
+            textViewController.delegate = self
             
         } else if segue.identifier == "Post" {
             guard let navigationController = segue.destination as? UINavigationController,

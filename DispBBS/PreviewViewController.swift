@@ -24,6 +24,7 @@ class PreviewViewController: UIViewController {
     var inputTitle: String!
     var inputText: String!
     
+    @IBOutlet weak var submitButton: UIBarButtonItem!
     var delegate: PreviewViewControllerDelegate?
     
     func loadPreview() {
@@ -66,6 +67,10 @@ class PreviewViewController: UIViewController {
         super.viewDidLoad()
 
         loadPreview()
+        
+        if boardId == "0" {
+            submitButton.title = "寄出信件"
+        }
     }
 
     override func didReceiveMemoryWarning() {

@@ -43,7 +43,7 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
         let urlString = "https://disp.cc/api/editor.php?act=textRead&bi=\(boardId!)&ti=\(textId!)&type=\(type!)"
         //print(urlString)
         let isLogin = (userId > 0) ? 1 : 0
-        let parameters: Parameters = ["isLogin": isLogin]
+        let parameters: Parameters = ["isLogin": isLogin, "targetName": targetName]
         self.loadingIndicator.startAnimating()
         Alamofire.request(urlString, method: .post, parameters: parameters).responseJSON { response in
             self.loadingIndicator.stopAnimating()
@@ -74,9 +74,16 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
                 self.ri = data["ri"] as? String ?? "0"
             }
             self.targetName = data["targetName"] as? String ?? ""
-            self.targetLabel.text = "看板:  \(self.targetName!)"
+            if self.boardId == "0" {
+                if self.targetName == "" {
+                    self.targetLabel.text = "收件者: 備忘錄"
+                } else {
+                    self.targetLabel.text = "收件者: \(self.targetName!)"
+                }
+            } else {
+                self.targetLabel.text = "看板:  \(self.targetName!)"
+            }
         }
-     
     }
         
     func alert(message: String) {
@@ -118,11 +125,20 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
                     return
                 }
             }
-            if(self.type == "reply") {
-                self.performSegue(withIdentifier: "UnwindToTextList", sender: self)
+            if self.boardId == "0" {
+                if(self.type == "reply") {
+                    self.performSegue(withIdentifier: "UnwindToMailList", sender: self)
+                } else {
+                    self.delegate?.editorDidSaveText()
+                    self.dismiss(animated: true, completion: nil)
+                }
             } else {
-                self.delegate?.editorDidSaveText()
-                self.dismiss(animated: true, completion: nil)
+                if(self.type == "reply") {
+                    self.performSegue(withIdentifier: "UnwindToTextList", sender: self)
+                } else {
+                    self.delegate?.editorDidSaveText()
+                    self.dismiss(animated: true, completion: nil)
+                }
             }
         }
     }
@@ -132,7 +148,6 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
         if let path = Bundle.main.path(forResource: "keys", ofType: "plist") {
             keys = NSDictionary(contentsOfFile: path)
         }
-        
         let clientId = keys?["ImgurClientId"] as? String ?? "在此輸入 Client ID"
         let mashapeKey = keys?["MashapeKey"] as? String ?? "在此輸入 Mashape Key"
         
@@ -203,10 +218,15 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
 
         loadText()
         
-        if self.type == "new" {
-            self.title = "發表文章"
-        } else if self.type == "reply" {
-            self.title = "回覆文章"
+        if boardId == "0" {
+            if type == "new" && targetName == "" { title = "備忘錄" }
+            else if type == "new" { title = "開新信件" }
+            else if type == "reply" { self.title = "回覆信件" }
+            else if type == "edit" { title = "備忘錄" }
+        } else {
+            if type == "new" { title = "發表文章" }
+            else if self.type == "reply" { title = "回覆文章" }
+            else if type == "edit" { title = "編輯文章" }
         }
         //sendButton.imageInsets = UIEdgeInsetsMake(0, 0, 0, -15)
         //moreButton.imageInsets = UIEdgeInsetsMake(0, -15, 0, 0)
@@ -248,7 +268,7 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
         let message = "確定要不存檔離開嗎？"
         let alert = UIAlertController(title: "取消編輯", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: "確定", style: .default, handler: { action in
+        alert.addAction(UIAlertAction(title: "確定", style: .destructive, handler: { action in
             self.dismiss(animated: true, completion: nil)
         }))
         self.present(alert, animated: true, completion: nil)
@@ -256,6 +276,7 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
     
     @IBAction func more(_ sender: Any) {
         let alert = UIAlertController(title: "選項", message: nil, preferredStyle: .actionSheet)
+        alert.popoverPresentationController?.barButtonItem = sender as? UIBarButtonItem
         alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "預覽文章", style: .default, handler: { action in
             self.performSegue(withIdentifier: "Preview", sender: nil)
@@ -264,6 +285,18 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
             self.saveText()
         }))
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func preview(_ sender: Any) {
+        if self.titleTextField.text == "" || self.textTextView.text == "" {
+            alert(message: "請輸入標題及內容")
+            return
+        }
+
+        //iPad要加這行關閉popover選單，不然會閃退
+        self.presentedViewController?.dismiss(animated: true, completion: nil)
+        
+        self.performSegue(withIdentifier: "Preview", sender: sender)
     }
     
     @IBAction func addPhoto(_ sender: Any) {
@@ -330,12 +363,6 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Preview" {
-            let inputTitle = self.titleTextField.text
-            let inputText = self.textTextView.text
-            if inputTitle == "" || inputText == "" {
-                alert(message: "請輸入標題及內容")
-                return
-            }
             guard let previewViewController = segue.destination as? PreviewViewController
                 else { return }
             previewViewController.boardId = self.boardId

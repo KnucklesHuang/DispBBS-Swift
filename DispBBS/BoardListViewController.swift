@@ -10,19 +10,22 @@ import UIKit
 import Alamofire
 import AlamofireImage
 
-class BoardListViewController: UITableViewController {
+class BoardListViewController: UITableViewController, TextListViewControllerDelegate {
+    var mainViewController: MainViewController!
 
     var boardListArray = [Any]()
     var numBoardListLoad: Int = 0
     var numBoardListTotal: Int = 0
     var numPageLoad: Int = 0
     var cellSelectedBackgroundView = UIView()
-    
+
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var userId = 0
+
     func loadData() {
         //print("BoardList loadData")
         let urlString = "https://disp.cc/api/board.php?act=blist&pageNum=\(numPageLoad)"
-        let userId = (UIApplication.shared.delegate as! AppDelegate).userId
-        let isLogin = (userId > 0) ? 1 : 0
+        let isLogin = (self.userId > 0) ? 1 : 0
         let parameters: Parameters = ["isLogin": isLogin]
         Alamofire.request(urlString, method: .post, parameters: parameters).responseJSON { response in
             if (self.refreshControl?.isRefreshing)! {
@@ -52,9 +55,7 @@ class BoardListViewController: UITableViewController {
                 self.numPageLoad += 1
                 self.tableView.reloadData()
             }
-            
         }
-        
     }
     
     func alert(message: String) {
@@ -64,6 +65,8 @@ class BoardListViewController: UITableViewController {
     }
     
     func refresh() {
+        self.userId = appDelegate.userId
+        
         boardListArray.removeAll()
         self.numPageLoad = 0
         self.numBoardListLoad = 0
@@ -73,6 +76,7 @@ class BoardListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.userId = appDelegate.userId
         loadData()
         
         self.refreshControl?.addTarget(self, action: #selector(refresh), for: UIControlEvents.valueChanged)
@@ -139,11 +143,19 @@ class BoardListViewController: UITableViewController {
                 cell.titleLabel?.text = "看板都載入完了"
             }
         }
+        cell.backgroundColor = UIColor.black
         cell.selectedBackgroundView = self.cellSelectedBackgroundView
-        
         return cell
     }
     
+    // MARK: - TextListViewController delegate
+    
+    func didLogin(userId: Int, userName: String) {
+        self.userId = userId
+        refresh()
+        mainViewController.didLogin(userId: userId, userName: userName)
+    }
+
     
     // MARK: - Navigation
     
@@ -156,6 +168,7 @@ class BoardListViewController: UITableViewController {
             textListViewController.boardName = board["name"] as? String
             textListViewController.boardTitle = board["title"] as? String
             textListViewController.boardIcon = board["icon"] as? String
+            textListViewController.delegate = self
         }
     }
     

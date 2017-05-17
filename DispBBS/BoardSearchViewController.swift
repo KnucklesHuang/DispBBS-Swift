@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 import Alamofire
 
-class BoardSearchViewController: UITableViewController, UISearchResultsUpdating, UISearchBarDelegate {
+class BoardSearchViewController: UITableViewController, UISearchResultsUpdating, UISearchBarDelegate, TextListViewControllerDelegate {
     var mainViewController: MainViewController!
 
 //    var boardHistoryList = [BoardHistory]()
@@ -20,7 +20,9 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
     var shouldShowSearchResult = false
     var searchController: UISearchController!
     var cellSelectedBackgroundView = UIView()
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var userId = 0
 
     func loadBoardHistoryList() {
         let managedContext = self.appDelegate.managedObjectContext
@@ -62,7 +64,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
     
     func loadBoardAllList() {
         let urlString = "https://disp.cc/api/get.php?act=bSearchList"
-        let isLogin = (appDelegate.userId > 0) ? 1 : 0
+        let isLogin = (self.userId > 0) ? 1 : 0
         let parameters: Parameters = ["isLogin": isLogin]
         Alamofire.request(urlString, method: .post, parameters: parameters).responseJSON { response in
             guard response.result.isSuccess else {
@@ -119,6 +121,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
     }
     
     func refresh() {
+        self.userId = appDelegate.userId
         loadBoardHistoryList()
         loadBoardAllList()
     }
@@ -126,6 +129,8 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.userId = appDelegate.userId
+        
         self.cellSelectedBackgroundView.backgroundColor = UIColor.darkGray
         initSearchController()
         
@@ -173,6 +178,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
         } else {
             cell?.textLabel?.text = "瀏覽過的看板"
         }
+        cell?.backgroundColor = UIColor.darkGray
         return cell
     }
     
@@ -182,6 +188,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
             let cell = tableView.dequeueReusableCell(withIdentifier: "BoardSearchClearCell", for: indexPath)
             cell.textLabel?.text = "清除瀏覽記錄"
             cell.selectedBackgroundView = self.cellSelectedBackgroundView
+            cell.backgroundColor = UIColor.black
             return cell
         }
         
@@ -203,6 +210,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
         attrStr.append(titleAttrStr)
         cell.textLabel?.attributedText = attrStr
 
+        cell.backgroundColor = UIColor.black
         cell.selectedBackgroundView = self.cellSelectedBackgroundView
         return cell
     }
@@ -285,6 +293,15 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
         tableView.reloadData()
     }
     
+    // MARK: - TextListViewController delegate
+    
+    func didLogin(userId: Int, userName: String) {
+        self.userId = userId
+        refresh()
+        mainViewController.didLogin(userId: userId, userName: userName)
+    }
+
+    
     // MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -305,6 +322,7 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
             }
             textListViewController.boardName = boardName
             textListViewController.boardTitle = boardTitle
+            textListViewController.delegate = self
         }
     }
     

@@ -8,21 +8,24 @@
 
 import UIKit
 
+protocol TextViewControllerDelegate {
+    func didLogin(userId: Int, userName: String)
+}
 
 class TextViewController: UIViewController, UIWebViewDelegate, EditorViewControllerDelegate, LoginViewControllerDelegate {
-    //var urlString: String!
     var boardId: String!
     var textId: String!
     var authorId: Int!
+    var authorName: String!
     var textTitle: String!
     var boardName: String!
     @IBOutlet weak var webView: UIWebView!
-    @IBOutlet weak var goBackBtn: UIBarButtonItem!
-    
-    var userId = (UIApplication.shared.delegate as! AppDelegate).userId
-
+    @IBOutlet weak var goBackButton: UIBarButtonItem!
     @IBOutlet weak var moreButton: UIBarButtonItem!
+    @IBOutlet weak var shareButton: UIBarButtonItem!
     
+    var delegate: TextViewControllerDelegate?
+    var userId = (UIApplication.shared.delegate as! AppDelegate).userId
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,6 +43,9 @@ class TextViewController: UIViewController, UIWebViewDelegate, EditorViewControl
         
         //self.moreButton.imageInsets = UIEdgeInsetsMake(0, -15, 0, 0)
         
+        if boardId == "0" {
+            shareButton.isEnabled = false
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -55,22 +61,43 @@ class TextViewController: UIViewController, UIWebViewDelegate, EditorViewControl
     }
     
     @IBAction func more(_ sender: Any) {
-        let alert = UIAlertController(title: "文章選項", message: nil, preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        var title = "文章選項"
+        if boardId == "0" { title = "信件選項" }
+        var message: String?
         if userId == 0 {
-            alert.addAction(UIAlertAction(title: "登入網站", style: .default, handler: { action in
-                self.performSegue(withIdentifier: "Login", sender: self)
-            }))
+            message = "要編輯或回覆文章必需先登入"
         }
-        if userId != 0 && userId == authorId {
-            alert.addAction(UIAlertAction(title: "編輯文章", style: .default, handler: { action in
-                self.performSegue(withIdentifier: "Edit", sender: self)
-            }))
-        }
-        if userId != 0 {
-            alert.addAction(UIAlertAction(title: "回覆文章", style: .default, handler: { action in
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+        // 要加這行，不然在iPad會閃退
+        alert.popoverPresentationController?.barButtonItem = sender as? UIBarButtonItem
+
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        if boardId == "0" {
+            if authorName == ">備忘錄" {
+                alert.addAction(UIAlertAction(title: "編輯備忘錄", style: .default, handler: { action in
+                    self.performSegue(withIdentifier: "Edit", sender: self)
+                }))
+            }
+            alert.addAction(UIAlertAction(title: "回覆信件", style: .default, handler: { action in
                 self.performSegue(withIdentifier: "Reply", sender: self)
             }))
+            
+        } else {
+            if userId == 0 {
+                alert.addAction(UIAlertAction(title: "登入帳號", style: .default, handler: { action in
+                    self.performSegue(withIdentifier: "Login", sender: self)
+                }))
+            }
+            if userId != 0 && userId == authorId {
+                alert.addAction(UIAlertAction(title: "編輯文章", style: .default, handler: { action in
+                    self.performSegue(withIdentifier: "Edit", sender: self)
+                }))
+            }
+            if userId != 0 {
+                alert.addAction(UIAlertAction(title: "回覆文章", style: .default, handler: { action in
+                    self.performSegue(withIdentifier: "Reply", sender: self)
+                }))
+            }
         }
         self.present(alert, animated: true, completion: nil)
     }
@@ -104,9 +131,9 @@ class TextViewController: UIViewController, UIWebViewDelegate, EditorViewControl
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
         
         if self.webView.canGoBack {
-            self.goBackBtn.isEnabled = true
+            self.goBackButton.isEnabled = true
         } else {
-            self.goBackBtn.isEnabled = false
+            self.goBackButton.isEnabled = false
         }
     }
     
@@ -125,6 +152,7 @@ class TextViewController: UIViewController, UIWebViewDelegate, EditorViewControl
     func didLogin(userId: Int, userName: String) {
         self.userId = userId
         refresh(self)
+        self.delegate?.didLogin(userId: userId, userName: userName)
     }
 
     // MARK: - Navigation
@@ -135,9 +163,19 @@ class TextViewController: UIViewController, UIWebViewDelegate, EditorViewControl
             let editorViewController = navigationController.topViewController as? EditorViewController
             else { return }
             
+            var targetName = self.boardName
+            if boardId == "0" {
+                if segue.identifier == "Edit" {
+                    targetName = "備忘錄"
+                } else {
+                    targetName = self.authorName
+                }
+            }
+            
             editorViewController.boardId = self.boardId
             editorViewController.textId = self.textId
             editorViewController.type = segue.identifier?.lowercased()
+            editorViewController.targetName = targetName
             editorViewController.delegate = self
             
         } else if segue.identifier == "Login" {

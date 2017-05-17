@@ -10,7 +10,9 @@ import UIKit
 import Alamofire
 import AlamofireImage
 
-class HotTextViewController: UITableViewController {
+class HotTextViewController: UITableViewController, TextViewControllerDelegate {
+    var mainViewController: MainViewController!
+
     var hotTextArray:[Any]?
     var cellBackgroundView = UIView()
     
@@ -113,11 +115,17 @@ class HotTextViewController: UITableViewController {
             cell.thumbImageView?.image = placeholderImage
         }
  
+        cell.backgroundColor = UIColor.black
         return cell
     }
     
+    // MARK: - TextViewController delegate
     
-    
+    func didLogin(userId: Int, userName: String) {
+        refresh()
+        mainViewController.didLogin(userId: userId, userName: userName)
+    }
+
     // MARK: - Navigation
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -130,12 +138,12 @@ class HotTextViewController: UITableViewController {
             textViewController.boardId = hotText["bi"] as? String
             textViewController.textId = hotText["ti"] as? String
             textViewController.authorId = hotText["ai"] as? Int
+            textViewController.authorName = hotText["author"] as? String
             textViewController.textTitle = hotText["title"] as? String
             textViewController.boardName = hotText["board_name"] as? String
+            textViewController.delegate = self
         }
     }
-    
-
 }
 
 

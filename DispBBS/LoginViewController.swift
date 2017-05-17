@@ -84,6 +84,7 @@ class LoginViewController: UIViewController, SFSafariViewControllerDelegate {
                 let loginAddr = data["loginAddr"] as! String
                 let loginTime = data["loginTime"] as! String
                 
+                self.appDelegate.userId = userId
                 self.delegate?.didLogin(userId: userId, userName: userName)
                 let message = "歡迎 \(userName) (\(nickname))\n第 \(loginNum) 次登入本站 (同一天只算一次)\n上次您來自 \(loginAddr)\n那天是 \(loginTime)"
                 self.saveCookies(response: response)

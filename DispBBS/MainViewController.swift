@@ -17,12 +17,13 @@ class MainViewController: UIViewController, LoginViewControllerDelegate {
     @IBOutlet weak var hotTextButton: UIButton!
     @IBOutlet weak var boardListButton: UIButton!
     @IBOutlet weak var boardSearchButton: UIButton!
+    @IBOutlet weak var mailListButton: UIButton!
     lazy var orderedTabButtons: [UIButton] = {
-        [self.hotTextButton, self.boardListButton, self.boardSearchButton]
+        [self.hotTextButton, self.boardListButton, self.boardSearchButton, self.mailListButton]
     }()
     var selectedTabIndex: Int! = 0
     
-    var mainPageViewController: MainPageViewController!
+    var pageViewController: PageViewController!
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var userId = 0
@@ -30,6 +31,8 @@ class MainViewController: UIViewController, LoginViewControllerDelegate {
     @IBOutlet weak var loginButton: UIBarButtonItem!
     
     let userDefault = UserDefaults.standard
+    
+    @IBOutlet weak var addMailButton: UIBarButtonItem!
     
     func changeTab(byIndex index: Int) {
         guard index >= 0 && index < orderedTabButtons.count else { return }
@@ -146,9 +149,19 @@ class MainViewController: UIViewController, LoginViewControllerDelegate {
             self.appDelegate.userId = 0
             self.userName = ""
             self.loginButton.title = "登入"
+            self.refresh(self)
         }
     }
     
+    func showAddMailButton() {
+        addMailButton.isEnabled = true
+        addMailButton.tintColor = UIColor.white
+    }
+    
+    func hideAddMailButton() {
+        self.addMailButton.isEnabled = false
+        self.addMailButton.tintColor = UIColor.clear
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -157,6 +170,8 @@ class MainViewController: UIViewController, LoginViewControllerDelegate {
         self.tabBarScrollView.scrollsToTop = false
 
         self.loginButton.title = ""
+        hideAddMailButton()
+        
         appInit()
     }
 
@@ -170,22 +185,63 @@ class MainViewController: UIViewController, LoginViewControllerDelegate {
         self.userId = userId
         self.userName = userName
         self.loginButton.title = "登出"
+        refresh(self)
     }
 
+    @IBAction func showHotText(_ sender: Any) {
+        changeTab(byIndex: 0)
+        pageViewController.showPage(byIndex: 0)
+    }
+    @IBAction func showBoardList(_ sender: Any) {
+        changeTab(byIndex: 1)
+        pageViewController.showPage(byIndex: 1)
+    }
+    @IBAction func showBoardSearch(_ sender: Any) {
+        changeTab(byIndex: 2)
+        pageViewController.showPage(byIndex: 2)
+    }
+    @IBAction func showMailList(_ sender: Any) {
+        changeTab(byIndex: 3)
+        pageViewController.showPage(byIndex: 3)
+    }
+    
+    @IBAction func refresh(_ sender: Any) {
+        switch(self.selectedTabIndex){
+        case 0: pageViewController.hotTextViewController.refresh()
+        case 1: pageViewController.boardListViewController.refresh()
+        case 2: pageViewController.boardSearchViewController.refresh()
+        case 3: pageViewController.mailListViewController.refresh()
+        default: return
+        }
+    }
+    
+    @IBAction func addMail(_ sender: Any) {
+        if userId == 0 {
+            let alert = UIAlertController(title: "尚未登入", message: "發表文章需要登入帳號，要現在登入嗎？", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "確定", style: .default, handler: { action in
+                self.performSegue(withIdentifier: "Login", sender: self)
+            }))
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            pageViewController.mailListViewController.addMail()
+        }
+    }
+    
     // MARK: - Navigation
-
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ContainerViewSegue" {
-            mainPageViewController = segue.destination as! MainPageViewController
-            mainPageViewController.mainViewController = self
-        } else if segue.identifier == "LoginSegue" {
+            pageViewController = segue.destination as! PageViewController
+            pageViewController.mainViewController = self
+        } else if segue.identifier == "Login" {
             let loginViewController = segue.destination as! LoginViewController
             loginViewController.delegate = self
         }
     }
     
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        if identifier == "LoginSegue" {
+        if identifier == "Login" {
             if userId != 0 {
                 logoutConform()
                 return false
@@ -193,30 +249,7 @@ class MainViewController: UIViewController, LoginViewControllerDelegate {
         }
         return true
     }
-
-    @IBAction func showHotText(_ sender: Any) {
-        changeTab(byIndex: 0)
-        mainPageViewController.showPage(byIndex: 0)
-    }
-    @IBAction func showBoardList(_ sender: Any) {
-        changeTab(byIndex: 1)
-        mainPageViewController.showPage(byIndex: 1)
-    }
-    @IBAction func showBoardSearch(_ sender: Any) {
-        changeTab(byIndex: 2)
-        mainPageViewController.showPage(byIndex: 2)
-    }
     
-    @IBAction func refresh(_ sender: Any) {
-        switch(self.selectedTabIndex){
-        case 0: mainPageViewController.hotTextViewController.refresh()
-        case 1: mainPageViewController.boardListViewController.refresh()
-        case 2: mainPageViewController.boardSearchViewController.refresh()
-        default: return
-        }
-    }
-    
-
 }
 
 
