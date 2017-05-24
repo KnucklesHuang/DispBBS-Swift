@@ -53,6 +53,7 @@
 		DDC0873E1EB7857F00A9E4DE /* EditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
 		DDD1DFCC1EC227DC00ADF4C2 /* keys.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = keys.plist; sourceTree = "<group>"; };
 		DDD1DFCE1EC32D4200ADF4C2 /* MailListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailListViewController.swift; sourceTree = "<group>"; };
+		DDD1DFD01ED3553000ADF4C2 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardSearchViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -108,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				DDB847ED1E64C9830044C003 /* AppDelegate.swift */,
+				DDD1DFD01ED3553000ADF4C2 /* BridgingHeader.h */,
 				DDB847F11E64C9830044C003 /* Main.storyboard */,
 				DD4301581E9B9F5900753D48 /* MainViewController.swift */,
 				DD43015A1E9B9FB900753D48 /* PageViewController.swift */,
@@ -399,6 +401,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Disp.DispBBS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_NAME)/BridgingHeader.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -414,6 +417,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Disp.DispBBS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_NAME)/BridgingHeader.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

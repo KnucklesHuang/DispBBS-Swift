@@ -10,5 +10,6 @@ target 'DispBBS' do
   pod 'AlamofireImage', '~> 3.2.0'
   pod 'AlamofireNetworkActivityIndicator', '~> 2.1.0'
   pod 'KeychainSwift', '~> 8.0'
+  pod 'Google/Analytics'
 
 end

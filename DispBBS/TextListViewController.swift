@@ -141,6 +141,18 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
         super.didReceiveMemoryWarning()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Google Analytics
+        let screenName = "Board:\(self.boardName)"
+        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
+        tracker.set(kGAIScreenName, value: screenName)
+        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
+        tracker.send(builder.build() as [NSObject : AnyObject])
+    }
+
+    
     @IBAction func post(_ sender: Any) {
         if userId == 0 {
             let alert = UIAlertController(title: "尚未登入", message: "發表文章需要登入帳號，要現在登入嗎？", preferredStyle: .alert)

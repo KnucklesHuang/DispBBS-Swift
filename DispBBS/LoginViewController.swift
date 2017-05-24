@@ -45,6 +45,17 @@ class LoginViewController: UIViewController, SFSafariViewControllerDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Google Analytics
+        let screenName = "Login"
+        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
+        tracker.set(kGAIScreenName, value: screenName)
+        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
+        tracker.send(builder.build() as [NSObject : AnyObject])
+    }
+    
     @IBAction func loginSubmit(_ sender: Any) {
         let inputName = usernameTextField.text!
         let inputPswd = passwordTextField.text!
@@ -156,6 +167,10 @@ class LoginViewController: UIViewController, SFSafariViewControllerDelegate {
         }
     }
 
+    @IBAction func hideKeyboard(_ sender: Any) {
+        self.view.endEditing(true)
+    }
+    
     @IBAction func clearInput(_ sender: Any) {
         self.userDefault.removeObject(forKey: "userId")
         self.userDefault.removeObject(forKey: "userName")
@@ -170,14 +185,6 @@ class LoginViewController: UIViewController, SFSafariViewControllerDelegate {
         
         self.clearInputButtom.isHidden = true
     }
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

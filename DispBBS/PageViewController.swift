@@ -73,9 +73,6 @@ class PageViewController: UIPageViewController, UIPageViewControllerDataSource, 
         self.boardSearchViewController.mainViewController = self.mainViewController
         
         setViewControllers([hotTextViewController], direction: .forward, animated: false, completion: nil)
-        // preload next page
-        setViewControllers([boardListViewController], direction: .forward, animated: false, completion: nil)
-        setViewControllers([hotTextViewController], direction: .forward, animated: false, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {
