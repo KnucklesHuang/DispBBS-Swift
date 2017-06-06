@@ -49,11 +49,11 @@ class LoginViewController: UIViewController, SFSafariViewControllerDelegate {
         super.viewDidAppear(animated)
         
         // Google Analytics
-        let screenName = "Login"
-        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
-        tracker.set(kGAIScreenName, value: screenName)
-        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
-        tracker.send(builder.build() as [NSObject : AnyObject])
+//        let screenName = "Login"
+//        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
+//        tracker.set(kGAIScreenName, value: screenName)
+//        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
+//        tracker.send(builder.build() as [NSObject : AnyObject])
     }
     
     @IBAction func loginSubmit(_ sender: Any) {

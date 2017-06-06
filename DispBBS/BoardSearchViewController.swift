@@ -147,11 +147,11 @@ class BoardSearchViewController: UITableViewController, UISearchResultsUpdating,
         super.viewDidAppear(animated)
         
         // Google Analytics
-        let screenName = "BoardSearch"
-        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
-        tracker.set(kGAIScreenName, value: screenName)
-        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
-        tracker.send(builder.build() as [NSObject : AnyObject])
+//        let screenName = "BoardSearch"
+//        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
+//        tracker.set(kGAIScreenName, value: screenName)
+//        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
+//        tracker.send(builder.build() as [NSObject : AnyObject])
     }
     
 

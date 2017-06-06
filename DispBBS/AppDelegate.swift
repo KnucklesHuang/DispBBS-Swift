@@ -9,6 +9,8 @@
 import UIKit
 import CoreData
 import AlamofireNetworkActivityIndicator
+import GoogleMobileAds
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // 要在每個類別都能存取的變數
     var userId: Int = 0
+    var isDebug = true
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -28,19 +31,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let path = Bundle.main.path(forResource: "keys", ofType: "plist") {
             keys = NSDictionary(contentsOfFile: path)
         }
-        let trackingId = keys?["TrackingId"] as? String ?? "YOUR_TRACKING_ID"
+        //let trackingId = keys?["TrackingId"] as? String ?? "YOUR_TRACKING_ID"
+        
+        // Google Firebase
+        FirebaseApp.configure()
         
         // Google Analytics
-        guard let gai = GAI.sharedInstance() else {
-            assert(false, "Google Analytics not configured correctly")
-        }
-        gai.tracker(withTrackingId: trackingId)
-        // Optional: automatically report uncaught exceptions.
-        gai.trackUncaughtExceptions = true
+//        guard let gai = GAI.sharedInstance() else {
+//            assert(false, "Google Analytics not configured correctly")
+//        }
+//        gai.tracker(withTrackingId: trackingId)
+//        // Optional: automatically report uncaught exceptions.
+//        gai.trackUncaughtExceptions = true
+//        
+//        // Optional: set Logger to VERBOSE for debug information.
+//        // Remove before app release.
+//        gai.logger.logLevel = .verbose;
         
-        // Optional: set Logger to VERBOSE for debug information.
-        // Remove before app release.
-        gai.logger.logLevel = .verbose;
+        // Google Mobile Ads 
+        let adMobTestAppId = "ca-app-pub-3940256099942544~1458002511"
+        let adMobAppId = keys?["AdMobAppId"] as? String ?? adMobTestAppId
+        GADMobileAds.configure(withApplicationID: adMobAppId)
+        
         
         return true
     }

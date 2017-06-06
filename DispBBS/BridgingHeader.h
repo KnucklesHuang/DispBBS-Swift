@@ -9,6 +9,7 @@
 #ifndef BridgingHeader_h
 #define BridgingHeader_h
 
-#import <Google/Analytics.h>
+//#import <Google/Analytics.h>
+//#import "MoPubSDK/MoPub-Bridging-Header.h"
 
 #endif /* BridgingHeader_h */

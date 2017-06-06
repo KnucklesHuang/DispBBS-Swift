@@ -70,6 +70,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
+## Firebase
+
+Copyright 2017 Google
+
 ## FirebaseAnalytics
 
 Copyright 2017 Google
@@ -82,13 +86,9 @@ Copyright 2017 Google
 
 Copyright 2017 Google
 
-## Google
+## Google-Mobile-Ads-SDK
 
-Copyright 2016 Google Inc.
-
-## GoogleAnalytics
-
-Copyright 2016 Google
+Copyright 2017 Google
 
 ## GoogleToolboxForMac
 

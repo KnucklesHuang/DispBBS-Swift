@@ -13,6 +13,8 @@
 		DD43015B1E9B9FB900753D48 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD43015A1E9B9FB900753D48 /* PageViewController.swift */; };
 		DD43015D1E9BBE6400753D48 /* BoardListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD43015C1E9BBE6400753D48 /* BoardListViewController.swift */; };
 		DD43015F1E9D36BB00753D48 /* TextListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD43015E1E9D36BB00753D48 /* TextListViewController.swift */; };
+		DD5EBA281EE30BAD00208ED4 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD5EBA271EE30BAD00208ED4 /* AdSupport.framework */; };
+		DD5EBA2A1EE4102A00208ED4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD5EBA291EE4102A00208ED4 /* GoogleService-Info.plist */; };
 		DD776E091E82AECC005B895C /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = DD776E081E82AECC005B895C /* .gitignore */; };
 		DDB847EE1E64C9830044C003 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB847ED1E64C9830044C003 /* AppDelegate.swift */; };
 		DDB847F31E64C9830044C003 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DDB847F11E64C9830044C003 /* Main.storyboard */; };
@@ -27,6 +29,7 @@
 		DDD1DFCD1EC227DC00ADF4C2 /* keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDD1DFCC1EC227DC00ADF4C2 /* keys.plist */; };
 		DDD1DFCF1EC32D4200ADF4C2 /* MailListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD1DFCE1EC32D4200ADF4C2 /* MailListViewController.swift */; };
 		DDD635C71EA7725100A79F8C /* BoardSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */; };
+		DDD9B8AA1EDDE9CB00B5C3D2 /* NativeAdsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD9B8A91EDDE9CB00B5C3D2 /* NativeAdsCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +41,8 @@
 		DD43015A1E9B9FB900753D48 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		DD43015C1E9BBE6400753D48 /* BoardListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardListViewController.swift; sourceTree = "<group>"; };
 		DD43015E1E9D36BB00753D48 /* TextListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextListViewController.swift; sourceTree = "<group>"; };
+		DD5EBA271EE30BAD00208ED4 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
+		DD5EBA291EE4102A00208ED4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DD776E081E82AECC005B895C /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		DDB847EA1E64C9830044C003 /* DispBBS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DispBBS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDB847ED1E64C9830044C003 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -55,6 +60,7 @@
 		DDD1DFCE1EC32D4200ADF4C2 /* MailListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailListViewController.swift; sourceTree = "<group>"; };
 		DDD1DFD01ED3553000ADF4C2 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardSearchViewController.swift; sourceTree = "<group>"; };
+		DDD9B8A91EDDE9CB00B5C3D2 /* NativeAdsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NativeAdsCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD5EBA281EE30BAD00208ED4 /* AdSupport.framework in Frameworks */,
 				3A582C5724EC655F34EDC949 /* Pods_DispBBS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -81,6 +88,7 @@
 		C260DE093A10167CAD35BBA8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DD5EBA271EE30BAD00208ED4 /* AdSupport.framework */,
 				96F1BFC6D10DC7A61996ABFF /* Pods_DispBBS.framework */,
 			);
 			name = Frameworks;
@@ -114,6 +122,7 @@
 				DD4301581E9B9F5900753D48 /* MainViewController.swift */,
 				DD43015A1E9B9FB900753D48 /* PageViewController.swift */,
 				DDB848011E68F9710044C003 /* TableViewCell.swift */,
+				DDD9B8A91EDDE9CB00B5C3D2 /* NativeAdsCell.swift */,
 				DDB847FF1E67B55E0044C003 /* HotTextViewController.swift */,
 				DD43015C1E9BBE6400753D48 /* BoardListViewController.swift */,
 				DDD635C61EA7725100A79F8C /* BoardSearchViewController.swift */,
@@ -127,6 +136,7 @@
 				DDB847F41E64C9830044C003 /* Assets.xcassets */,
 				DDB847F61E64C9830044C003 /* LaunchScreen.storyboard */,
 				DDB847F91E64C9830044C003 /* Info.plist */,
+				DD5EBA291EE4102A00208ED4 /* GoogleService-Info.plist */,
 				DDD1DFCC1EC227DC00ADF4C2 /* keys.plist */,
 			);
 			path = DispBBS;
@@ -200,6 +210,7 @@
 				DDB847F81E64C9830044C003 /* LaunchScreen.storyboard in Resources */,
 				DDB847F51E64C9830044C003 /* Assets.xcassets in Resources */,
 				DDB847F31E64C9830044C003 /* Main.storyboard in Resources */,
+				DD5EBA2A1EE4102A00208ED4 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +271,7 @@
 			files = (
 				DD43015D1E9BBE6400753D48 /* BoardListViewController.swift in Sources */,
 				DDB847EE1E64C9830044C003 /* AppDelegate.swift in Sources */,
+				DDD9B8AA1EDDE9CB00B5C3D2 /* NativeAdsCell.swift in Sources */,
 				DDC0873B1EAD120700A9E4DE /* CoreData.xcdatamodeld in Sources */,
 				DDB848001E67B55E0044C003 /* HotTextViewController.swift in Sources */,
 				DDB848021E68F9710044C003 /* TableViewCell.swift in Sources */,
@@ -344,6 +356,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "Pods/**";
 			};
 			name = Debug;
 		};
@@ -386,6 +399,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "Pods/**";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -399,10 +413,12 @@
 				INFOPLIST_FILE = DispBBS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Disp.DispBBS;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Disp.Disp-BBS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_NAME)/BridgingHeader.h";
 				SWIFT_VERSION = 3.0;
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
@@ -415,10 +431,12 @@
 				INFOPLIST_FILE = DispBBS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Disp.DispBBS;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Disp.Disp-BBS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_NAME)/BridgingHeader.h";
 				SWIFT_VERSION = 3.0;
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Release;
 		};

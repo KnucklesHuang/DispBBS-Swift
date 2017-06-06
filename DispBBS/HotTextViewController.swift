@@ -9,12 +9,15 @@
 import UIKit
 import Alamofire
 import AlamofireImage
+import GoogleMobileAds
 
 class HotTextViewController: UITableViewController, TextViewControllerDelegate {
     var mainViewController: MainViewController!
 
     var hotTextArray:[Any]?
     var cellBackgroundView = UIView()
+    var isDebug = (UIApplication.shared.delegate as! AppDelegate).isDebug
+    var keys: NSDictionary?
     
     func loadData() {
         //print("hotText loadData")
@@ -50,15 +53,18 @@ class HotTextViewController: UITableViewController, TextViewControllerDelegate {
         loadData()
     }
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
         loadData()
         
         self.refreshControl?.addTarget(self, action: #selector(refresh), for: UIControlEvents.valueChanged)
-        
         self.cellBackgroundView.backgroundColor = UIColor.darkGray
+        
+        if let path = Bundle.main.path(forResource: "keys", ofType: "plist") {
+            keys = NSDictionary(contentsOfFile: path)
+        }
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -69,11 +75,11 @@ class HotTextViewController: UITableViewController, TextViewControllerDelegate {
         super.viewDidAppear(animated)
 
         // Google Analytics
-        let screenName = "HotText"
-        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
-        tracker.set(kGAIScreenName, value: screenName)
-        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
-        tracker.send(builder.build() as [NSObject : AnyObject])
+//        let screenName = "HotText"
+//        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
+//        tracker.set(kGAIScreenName, value: screenName)
+//        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
+//        tracker.send(builder.build() as [NSObject : AnyObject])
     }
 
     // MARK: - Table view data source
@@ -83,20 +89,63 @@ class HotTextViewController: UITableViewController, TextViewControllerDelegate {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let num = self.hotTextArray?.count {
-            return num
-        } else {
+        guard let num = self.hotTextArray?.count else {
             return 0
+        }
+        if num >= 10 { // add native ads *2
+            return num + 2
+        } else if num >= 5 { // add native ads
+            return num + 1
+        } else {
+            return num
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let num = hotTextArray?.count ?? 0
+        if indexPath.row == num + 1 {
+            return 320.0
+        } else {
+            return 100.0
         }
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let num = hotTextArray?.count ?? 0
+        if indexPath.row == 5 || indexPath.row == num + 1 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "NativeAdsCell", for: indexPath) as! NativeAdsCell
+            if let nativeExpressAdView = cell.nativeExpressAdView {
+                let testUnitID = "ca-app-pub-3940256099942544/2562852117"
+                if indexPath.row == 5 {
+                    nativeExpressAdView.adUnitID = keys?["AdMobUnitIdHotText"] as? String ?? testUnitID
+                } else {
+                    nativeExpressAdView.adUnitID = keys?["AdMobUnitIdHotTextBot"] as? String ?? testUnitID
+                }
+                nativeExpressAdView.rootViewController = self
+                
+                let request = GADRequest()
+                if(isDebug){
+                    var testDevices: [Any] = [kGADSimulatorID]
+                    if let deviceIdList = keys?["AdMobDeviceId"] as? [Any] {
+                        testDevices.append(contentsOf: deviceIdList)
+                    }
+                    request.testDevices = testDevices
+                }
+                nativeExpressAdView.load(request)
+            }
+            cell.backgroundColor = UIColor.black
+            return cell
+        }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "HotTextCell", for: indexPath) as! TableViewCell
         
-        cell.selectedBackgroundView = self.cellBackgroundView
-        
-        guard let hotText = self.hotTextArray?[indexPath.row] as? [String: Any] else {
+        var index = indexPath.row
+        if indexPath.row > 5 {
+            index = indexPath.row - 1
+        }
+        guard let hotText = self.hotTextArray?[index] as? [String: Any] else {
             print("Get row \(indexPath.row) error")
             return cell
         }
@@ -127,6 +176,7 @@ class HotTextViewController: UITableViewController, TextViewControllerDelegate {
         }
  
         cell.backgroundColor = UIColor.black
+        cell.selectedBackgroundView = self.cellBackgroundView
         return cell
     }
     
@@ -136,16 +186,22 @@ class HotTextViewController: UITableViewController, TextViewControllerDelegate {
         refresh()
         mainViewController.didLogin(userId: userId, userName: userName)
     }
+    
 
     // MARK: - Navigation
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "TextRead" {
             guard let textViewController = segue.destination as? TextViewController,
-                let row = self.tableView.indexPathForSelectedRow?.row,
-                let hotText = self.hotTextArray?[row] as? [String: Any]
+                let row = self.tableView.indexPathForSelectedRow?.row
                 else { return }
 
+            var index = row
+            if row == 5 { return }
+            else if row > 5 { index = row - 1 }
+            guard let hotText = self.hotTextArray?[index] as? [String: Any]
+                else { return }
+            
             textViewController.boardId = hotText["bi"] as? String
             textViewController.textId = hotText["ti"] as? String
             textViewController.authorId = hotText["ai"] as? Int

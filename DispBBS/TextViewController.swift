@@ -32,8 +32,9 @@ class TextViewController: UIViewController, UIWebViewDelegate, EditorViewControl
 
         self.webView.delegate = self
         
+        let appVer = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.0"
         if self.boardId != nil && self.textId != nil {
-            let urlString = "https://disp.cc/m/\(boardId!)-\(textId!)?fr=DispApp"
+            let urlString = "https://disp.cc/m/\(boardId!)-\(textId!)?fr=DispApp&app=ios&appVer=\(appVer)"
             //print(urlString)
             if let url = URL(string: urlString) {
                 let request = URLRequest(url: url)
@@ -56,11 +57,11 @@ class TextViewController: UIViewController, UIWebViewDelegate, EditorViewControl
         super.viewDidAppear(animated)
         
         // Google Analytics
-        let screenName = "Text:\(self.boardId)-\(self.textId)"
-        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
-        tracker.set(kGAIScreenName, value: screenName)
-        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
-        tracker.send(builder.build() as [NSObject : AnyObject])
+//        let screenName = "Text:\(self.boardId)-\(self.textId)"
+//        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
+//        tracker.set(kGAIScreenName, value: screenName)
+//        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
+//        tracker.send(builder.build() as [NSObject : AnyObject])
     }
 
     

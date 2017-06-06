@@ -51,7 +51,8 @@ class MainViewController: UIViewController, LoginViewControllerDelegate {
     func appInit() {
         self.loadCookies()
         
-        let urlString = "https://disp.cc/api/get.php?act=appInit&appVer=2"
+        let appVer = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.0"
+        let urlString = "https://disp.cc/api/get.php?act=appInit&app=ios&appVer=\(appVer)"
         let parameters: Parameters = ["isLogin": 1]
         Alamofire.request(urlString, method: .post, parameters: parameters).responseJSON { response in
             guard response.result.isSuccess else {
@@ -107,7 +108,7 @@ class MainViewController: UIViewController, LoginViewControllerDelegate {
     }
 
     func updateConform(message: String, url: String) {
-        let alert = UIAlertController(title: "需要更新程式", message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: "系統訊息", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "確定", style: .default, handler: { action in
             UIApplication.shared.openURL(URL(string: url)!)

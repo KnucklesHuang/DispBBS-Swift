@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import Alamofire
 import AlamofireImage
+import GoogleMobileAds
 
 protocol TextListViewControllerDelegate {
     func didLogin(userId: Int, userName: String)
@@ -32,7 +33,9 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
 
     var delegate: TextListViewControllerDelegate?
     var userId = (UIApplication.shared.delegate as! AppDelegate).userId
-    
+    var isDebug = (UIApplication.shared.delegate as! AppDelegate).isDebug
+    var keys: NSDictionary?
+
     func loadData() {
         let urlString = "https://disp.cc/api/board.php?act=tlist&bn=\(boardName!)&pageNum=\(numPageLoad)"
         let isLogin = (userId > 0) ? 1 : 0
@@ -135,6 +138,9 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
         self.refreshControl?.addTarget(self, action: #selector(refresh(_:)), for: UIControlEvents.valueChanged)
         self.cellSelectedBackgroundView.backgroundColor = UIColor.darkGray
         
+        if let path = Bundle.main.path(forResource: "keys", ofType: "plist") {
+            keys = NSDictionary(contentsOfFile: path)
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -145,11 +151,11 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
         super.viewDidAppear(animated)
         
         // Google Analytics
-        let screenName = "Board:\(self.boardName)"
-        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
-        tracker.set(kGAIScreenName, value: screenName)
-        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
-        tracker.send(builder.build() as [NSObject : AnyObject])
+//        let screenName = "Board:\(self.boardName)"
+//        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
+//        tracker.set(kGAIScreenName, value: screenName)
+//        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
+//        tracker.send(builder.build() as [NSObject : AnyObject])
     }
 
     
@@ -189,7 +195,12 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch(section) {
         case 0: return self.botListArray.count
-        case 1: return self.numTextListLoad
+        case 1:
+            if self.numTextListLoad >= 5 {
+                return self.numTextListLoad + 1
+            } else {
+                return self.numTextListLoad
+            }
         case 2: return 1
         default: return 0
         }
@@ -229,6 +240,28 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        if indexPath.section == 1 && indexPath.row == 5 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "NativeAdsCell", for: indexPath) as! NativeAdsCell
+            if let nativeExpressAdView = cell.nativeExpressAdView {
+                let testUnitID = "ca-app-pub-3940256099942544/2562852117"
+                nativeExpressAdView.adUnitID = keys?["AdMobUnitIdTextList"] as? String ?? testUnitID
+                nativeExpressAdView.rootViewController = self
+                
+                let request = GADRequest()
+                if(isDebug){
+                    var testDevices: [Any] = [kGADSimulatorID]
+                    if let deviceIdList = keys?["AdMobDeviceId"] as? [Any] {
+                        testDevices.append(contentsOf: deviceIdList)
+                    }
+                    request.testDevices = testDevices
+                }
+                nativeExpressAdView.load(request)
+            }
+            cell.backgroundColor = UIColor.black
+            return cell
+        }
+        
         var cell: TableViewCell
         if indexPath.section == 0 || indexPath.section == 1 {
             var dataArray: [Any]
@@ -239,7 +272,12 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
                 cell = tableView.dequeueReusableCell(withIdentifier: "TextListCell", for: indexPath) as! TableViewCell
                 dataArray = self.textListArray
             }
-            guard let text = dataArray[indexPath.row] as? [String: Any] else {
+            
+            var index = indexPath.row
+            if indexPath.section == 1 && indexPath.row > 5 {
+                index = indexPath.row - 1
+            }
+            guard let text = dataArray[index] as? [String: Any] else {
                 return cell
             }
             
@@ -344,7 +382,11 @@ class TextListViewController: UITableViewController, EditorViewControllerDelegat
             if indexPath.section == 0 {
                 text = self.botListArray[indexPath.row] as? [String: Any]
             } else {
-                text = self.textListArray[indexPath.row] as? [String: Any]
+                var index = indexPath.row
+                if indexPath.row > 5 {
+                    index = indexPath.row - 1
+                }
+                text = self.textListArray[index] as? [String: Any]
             }
             
             textViewController.boardId = self.boardId

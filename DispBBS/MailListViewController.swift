@@ -120,11 +120,11 @@ class MailListViewController: UITableViewController, EditorViewControllerDelegat
         super.viewDidAppear(animated)
         
         // Google Analytics
-        let screenName = "MailList"
-        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
-        tracker.set(kGAIScreenName, value: screenName)
-        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
-        tracker.send(builder.build() as [NSObject : AnyObject])
+//        let screenName = "MailList"
+//        guard let tracker = GAI.sharedInstance().defaultTracker else { return }
+//        tracker.set(kGAIScreenName, value: screenName)
+//        guard let builder = GAIDictionaryBuilder.createScreenView() else { return }
+//        tracker.send(builder.build() as [NSObject : AnyObject])
     }
 
     @IBAction func unwindToMailList(segue: UIStoryboardSegue) {
