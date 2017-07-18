@@ -9,7 +9,6 @@
 import UIKit
 import CoreData
 import AlamofireNetworkActivityIndicator
-import GoogleMobileAds
 import Firebase
 
 @UIApplicationMain
@@ -19,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // 要在每個類別都能存取的變數
     var userId: Int = 0
-    var isDebug = true
+    var isDebug = false
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
