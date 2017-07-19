@@ -158,15 +158,15 @@ class EditorViewController: UIViewController, UITextViewDelegate, PreviewViewCon
         //print("width: \(width), height: \(height), scale: \(image.scale)")
         
         var scaledWidth = width, scaledHeight = height
-        let deviceScale = UIScreen.main.scale
-        if width > 1200 {
-            // af_imageScaled 產生的 size 會乘以 deviceScale，所以設定的寬高要先除 deviceScale
-            scaledWidth = 1024.0 / deviceScale
-            scaledHeight = (height * 1024.0 / width) / deviceScale
+        if scaledWidth > 1200 {
+            scaledWidth = 1024.0
+            scaledHeight = height * 1024.0 / width
         }
         //print("scaled width: \(scaledWidth), height: \(scaledHeight)")
 
-        let size = CGSize(width: scaledWidth, height: scaledHeight)
+        // af_imageScaled 產生的 size 會乘以 deviceScale，所以設定的寬高要先除 deviceScale
+        let deviceScale = UIScreen.main.scale
+        let size = CGSize(width: scaledWidth/deviceScale, height: scaledHeight/deviceScale)
         let scaledImage = image.af_imageScaled(to: size)
         //print("scaledImage width: \(scaledImage.size.width), height: \(scaledImage.size.height), scale: \(scaledImage.scale)")
         

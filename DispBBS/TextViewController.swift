@@ -96,6 +96,17 @@ class TextViewController: UIViewController, UIWebViewDelegate, EditorViewControl
             }))
             
         } else {
+            alert.addAction(UIAlertAction(title: "用Safari開啟", style: .default, handler: { action in
+                let url = URL(string: "https://disp.cc/m/\(self.boardId!)-\(self.textId!)")!
+                UIApplication.shared.openURL(url)
+            }))
+            let url = URL(string: "googlechromes://disp.cc/m/\(self.boardId!)-\(self.textId!)")!
+            if UIApplication.shared.canOpenURL(url) {
+                alert.addAction(UIAlertAction(title: "用Chrome開啟", style: .default, handler: { action in
+                    UIApplication.shared.openURL(url)
+                }))
+            }
+            
             if userId == 0 {
                 alert.addAction(UIAlertAction(title: "登入帳號", style: .default, handler: { action in
                     self.performSegue(withIdentifier: "Login", sender: self)
